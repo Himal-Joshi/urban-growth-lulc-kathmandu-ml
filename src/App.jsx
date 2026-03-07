@@ -393,12 +393,17 @@ export default function App() {
         @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
         /* ── Header ── */
-        .header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:50px;background:rgba(11,21,37,0.97);border-bottom:1px solid var(--border);flex-shrink:0;}
-        .logo{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),#c9184a);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-        .header-left{display:flex;align-items:center;gap:10px;}
-        .header-title{font-size:13px;font-weight:700;}
+        .header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:58px;background:rgba(11,21,37,0.97);border-bottom:1px solid var(--border);flex-shrink:0;}
+        .logo{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),#c9184a);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .header-left{display:flex;align-items:center;gap:12px;}
+        .header-title{font-size:18px;font-weight:700;letter-spacing:-0.3px;}
         .header-title span{color:var(--accent);}
-        .header-sub{font-size:9px;color:var(--text3);font-family:var(--mono);letter-spacing:1px;}
+        .header-sub{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:1px;margin-top:2px;}
+        @media(max-width:767px){
+          .header{height:54px;}
+          .logo{width:34px;height:34px;font-size:16px;border-radius:8px;}
+          .header-title{font-size:16px;}
+        }
         .badge{padding:2px 8px;border-radius:20px;font-size:9px;font-family:var(--mono);font-weight:500;}
         .badge-s{background:rgba(251,133,0,.12);color:#fb8500;border:1px solid rgba(251,133,0,.25);}
         .badge-b{background:rgba(72,149,239,.12);color:var(--blue);border:1px solid rgba(72,149,239,.25);}
@@ -436,6 +441,7 @@ export default function App() {
         .yr-num{font-family:var(--mono);font-size:clamp(22px,5vw,34px);font-weight:700;color:#fff;line-height:1;letter-spacing:-1px;}
         .pred-tag{font-size:8px;font-family:var(--mono);padding:2px 5px;background:rgba(255,183,3,.15);border:1px solid rgba(255,183,3,.4);color:var(--gold);border-radius:4px;}
         .stat-ov{position:absolute;top:10px;right:55px;background:rgba(7,13,25,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;min-width:95px;z-index:5;pointer-events:none;}
+        .stat-ov-mobile{position:absolute;bottom:175px;right:10px;background:rgba(7,13,25,.88);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 11px;min-width:105px;z-index:5;pointer-events:none;}
         .sol{font-size:8px;font-family:var(--mono);color:var(--text3);letter-spacing:1px;margin-bottom:1px;}
         .sov{font-size:clamp(14px,4vw,20px);font-weight:700;font-family:var(--mono);color:var(--accent);line-height:1;}
         .sou{font-size:9px;color:var(--text3);}
@@ -601,11 +607,11 @@ export default function App() {
                 <img className="fi" src={tileUrl(currentYear)} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/>
                 {showHotspot&&<img className="fi" src={`${BASE}/hotspot/hotspot.png`} style={{opacity:.7,mixBlendMode:"screen"}} alt=""/>}
                 <div className="yr-badge"><span className="yr-num">{currentYear}</span>{isPredicted&&<span className="pred-tag">PRED</span>}</div>
-                <div className="stat-ov">
+                <div className="stat-ov-mobile">
                   <div className="sol">BUILT-UP</div>
                   <div className="sov">{currentData?.builtup.area_km2.toFixed(1)}<span className="sou"> km²</span></div>
                   <div className="sop">{currentData?.builtup.pct.toFixed(1)}%</div>
-                  {yoyChange!==null&&<div className="soc" style={{color:yoyChange>=0?"#fb8500":"var(--blue)"}}>{yoyChange>=0?"▲":"▼"}{Math.abs(yoyChange).toFixed(1)}</div>}
+                  {yoyChange!==null&&<div className="soc" style={{color:yoyChange>=0?"#fb8500":"var(--blue)"}}>{yoyChange>=0?"▲":"▼"} {Math.abs(yoyChange).toFixed(1)} km²</div>}
                 </div>
                 <div className="leg">
                   {(showHotspot?HOTSPOT_LEGEND:Object.entries(LULC).map(([,v])=>({color:v.color,label:v.label}))).map(it=>(
