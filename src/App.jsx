@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from "recharts";
 import { Play, Pause, Layers, Eye, EyeOff, AlertCircle, TrendingUp, Map, BarChart2, Maximize2 } from "lucide-react";
 
-const BASE = "/public/data";
+const BASE = "/urban-growth-lulc-kathmandu-ml/data";
 
 const LULC = {
   builtup:    { color: "#ff4d6d", grad: ["#ff4d6d","#c9184a"], label: "Built-up",   icon: "🏙️" },
