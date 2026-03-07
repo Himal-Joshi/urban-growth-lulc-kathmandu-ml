@@ -453,10 +453,10 @@ export default function App() {
 
         /* ── Slider ── */
         .sl-sec{padding:0 4px;flex-shrink:0;}
-        .sl-ticks{position:relative;height:14px;margin-bottom:2px;}
-        .tick{position:absolute;top:0;transform:translateX(-50%);font-size:8px;font-family:var(--mono);color:var(--text3);pointer-events:none;}
+        .sl-ticks{position:relative;height:20px;margin-bottom:2px;}
+        .tick{position:absolute;top:0;transform:translateX(-50%);font-size:7.5px;font-family:var(--mono);color:var(--text3);pointer-events:none;white-space:nowrap;}
         .tick.sensor{color:#fb8500;}
-        .tickl{position:absolute;bottom:0;left:50%;width:1px;height:4px;background:#fb8500;transform:translateX(-50%);}
+        .tickl{position:absolute;top:13px;left:50%;width:2px;height:6px;background:#fb8500;border-radius:1px;transform:translateX(-50%);}
         input[type=range]{-webkit-appearance:none;width:100%;background:transparent;cursor:pointer;}
         input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--fill,0%),var(--bg4) var(--fill,0%),var(--bg4) 100%);border-radius:2px;}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);margin-top:-7px;border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(255,77,109,.25);}
@@ -555,7 +555,6 @@ export default function App() {
         /* ── Responsive breakpoints ── */
         @media(max-width:767px){
           .header-sub{display:none;}
-          .badge-b{display:none;}
           .sumbar{grid-template-columns:repeat(2,1fr);}
           .si:nth-child(3){border-top:1px solid var(--border);}
           .si:nth-child(4){border-top:1px solid var(--border);}
@@ -577,8 +576,8 @@ export default function App() {
             <div className="header-sub">LAND USE & LAND COVER · 2000–2022</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {!isMobile&&<span className="badge badge-b">LANDSAT 5/7/8/9</span>}
+        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
+          <span className="badge badge-b">LANDSAT 5/7/8/9</span>
           <span className="badge badge-s">⚡ L7→L8: 2013</span>
         </div>
       </header>
@@ -680,7 +679,11 @@ export default function App() {
               </ZoomableMap>
               <div className="sl-sec">
                 <div className="sl-ticks">
-                  {years.map((y,i)=>(<div key={y} className={`tick ${y===2013?"sensor":""}`} style={{left:`${(i/(years.length-1))*100}%`}}>{(y%5===0||y===2013)?y:""}{y===2013&&<div className="tickl"/>}</div>))}
+                  {years.map((y,i)=>(
+                    <div key={y} className={`tick ${y===2013?"sensor":""}`} style={{left:`${(i/(years.length-1))*100}%`}}>
+                      {y}{y===2013&&<div className="tickl"/>}
+                    </div>
+                  ))}
                 </div>
                 <input type="range" min={0} max={years.length-1} value={yearIdx} style={{"--fill":`${(yearIdx/(years.length-1))*100}%`}} onChange={e=>{setYearIdx(+e.target.value);setPlaying(false);}}/>
               </div>
