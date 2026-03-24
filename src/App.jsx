@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from "recharts";
-import { Play, Pause, Layers, Eye, EyeOff, AlertCircle, BarChart2, ZoomIn, ZoomOut, Maximize2, Move, ChevronUp, ChevronDown, Menu, X } from "lucide-react";
+import { Play, Pause, Layers, Eye, EyeOff, AlertCircle, BarChart2, ZoomIn, ZoomOut, Maximize2, Move, ChevronUp, ChevronDown, Menu, X, Download } from "lucide-react";
 
 const BASE = "/urban-growth-lulc-kathmandu-ml/data";
 
@@ -92,6 +92,7 @@ function useZoomPan() {
   // Pointer drag
   const onPointerDown = useCallback((e) => {
     if (e.button !== 0 && e.pointerType !== "touch") return;
+    if (zoomRef.current <= MIN_ZOOM) return; // Don't capture at minimum zoom
     dragging.current = true;
     lastPt.current = { x: e.clientX, y: e.clientY };
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -194,7 +195,7 @@ function ZoomableMap({ children, className, style }) {
 }
 
 // ── SwipeCompare ──────────────────────────────────────────────────────────────
-function SwipeCompare({ urlA, urlB, yearA, yearB }) {
+function SwipeCompare({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB }) {
   const zp = useZoomPan();
   const [swipePct, setSwipePct] = useState(50);
   const [hinted, setHinted] = useState(false);
@@ -235,8 +236,8 @@ function SwipeCompare({ urlA, urlB, yearA, yearB }) {
       <div onPointerDown={startSwipe} onTouchStart={startSwipe}
         style={{position:"absolute",top:"50%",left:`${swipePct}%`,transform:"translate(-50%,-50%)",width:44,height:44,borderRadius:"50%",background:"white",border:"2px solid #ccc",display:"flex",alignItems:"center",justifyContent:"center",cursor:"ew-resize",zIndex:25,boxShadow:"0 2px 14px rgba(0,0,0,0.5)",fontSize:17,color:"#070d19",fontWeight:900,userSelect:"none",touchAction:"none"}}>⇄</div>
       {/* Labels */}
-      <div style={{position:"absolute",top:12,left:12,fontSize:"clamp(14px,4vw,22px)",fontWeight:700,fontFamily:"var(--mono)",color:"#fff",textShadow:"0 2px 12px #000",pointerEvents:"none",zIndex:15}}>{yearA}</div>
-      <div style={{position:"absolute",top:12,right:55,fontSize:"clamp(14px,4vw,22px)",fontWeight:700,fontFamily:"var(--mono)",color:"#fff",textShadow:"0 2px 12px #000",pointerEvents:"none",zIndex:15}}>{yearB}</div>
+      <div style={{position:"absolute",top:12,left:12,fontSize:"clamp(14px,4vw,22px)",fontWeight:700,fontFamily:"var(--mono)",color:"#fff",textShadow:"0 2px 12px #000",pointerEvents:"none",zIndex:15,display:"flex",alignItems:"center",gap:4}}>{yearA}{isPredictedA&&<span style={{fontSize:"clamp(7px,2vw,9px)",background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 4px"}}>PRED</span>}</div>
+      <div style={{position:"absolute",top:12,right:55,fontSize:"clamp(14px,4vw,22px)",fontWeight:700,fontFamily:"var(--mono)",color:"#fff",textShadow:"0 2px 12px #000",pointerEvents:"none",zIndex:15,display:"flex",alignItems:"center",gap:4}}>{yearB}{isPredictedB&&<span style={{fontSize:"clamp(7px,2vw,9px)",background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 4px"}}>PRED</span>}</div>
       {!hinted&&<div style={{position:"absolute",bottom:55,left:"50%",transform:"translateX(-50%)",background:"rgba(7,13,25,0.85)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:20,padding:"4px 14px",fontSize:10,fontFamily:"var(--mono)",color:"var(--text3)",zIndex:15,pointerEvents:"none",whiteSpace:"nowrap"}}>⇄ drag handle to compare</div>}
       <ZoomControls zoomIn={zp.zoomIn} zoomOut={zp.zoomOut} reset={zp.reset} zoom={zp.zoom}/>
       {zp.zoom>1&&<div style={{position:"absolute",top:10,left:"50%",transform:"translateX(-50%)",background:"rgba(7,13,25,0.82)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:20,padding:"3px 10px",fontSize:9,fontFamily:"var(--mono)",color:"#fb8500",zIndex:30,pointerEvents:"none",whiteSpace:"nowrap"}}>
@@ -249,6 +250,112 @@ function SwipeCompare({ urlA, urlB, yearA, yearB }) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active||!payload?.length) return null;
   return (<div className="custom-tooltip"><div className="tt-year">{label}</div><div className="tt-val">{payload[0]?.value?.toFixed(1)} <span>km²</span></div></div>);
+};
+
+// ── Data Export Functions ─────────────────────────────────────────────────────
+const downloadFile = (content, filename, type) => {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+const exportToCSV = (stats) => {
+  const headers = ['Year', 'Observed', 'Built-up (km²)', 'Built-up (%)', 'Vegetation (km²)', 'Vegetation (%)', 'Cropland (km²)', 'Cropland (%)', 'Water (km²)', 'Water (%)', 'Total Area (km²)'];
+  const rows = stats.years.map(year => {
+    const data = stats.data[year];
+    return [
+      year,
+      data.observed ? 'Yes' : 'No',
+      data.builtup.area_km2.toFixed(2),
+      data.builtup.pct.toFixed(2),
+      data.vegetation.area_km2.toFixed(2),
+      data.vegetation.pct.toFixed(2),
+      data.cropland.area_km2.toFixed(2),
+      data.cropland.pct.toFixed(2),
+      data.water.area_km2.toFixed(2),
+      data.water.pct.toFixed(2),
+      data.total_valid_km2.toFixed(2)
+    ].join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  downloadFile(csv, 'kathmandu_urban_growth_data.csv', 'text/csv');
+};
+
+const exportToJSON = (stats) => {
+  const jsonData = JSON.stringify(stats, null, 2);
+  downloadFile(jsonData, 'kathmandu_urban_growth_data.json', 'application/json');
+};
+
+const exportToTextReport = (stats) => {
+  const lines = [
+    '═══════════════════════════════════════════════════════════════════',
+    '    KATHMANDU VALLEY URBAN GROWTH ANALYSIS (2000-2030)',
+    '    Land Use & Land Cover Classification Report',
+    '═══════════════════════════════════════════════════════════════════',
+    '',
+    'DATA SOURCE: Landsat Collection 2 (2000-2023)',
+    'PROCESSING: Google Earth Engine',
+    'STUDY AREA: Kathmandu Valley (1,039 km²)',
+    'MODEL: FlexConvLSTM Neural Network (67% accuracy)',
+    '',
+    '───────────────────────────────────────────────────────────────────',
+    'BUILT-UP AREA GROWTH SUMMARY',
+    '───────────────────────────────────────────────────────────────────',
+    ''
+  ];
+
+  const firstYear = stats.years[0];
+  const lastObserved = stats.years.filter(y => stats.data[y].observed).slice(-1)[0];
+  const lastYear = stats.years.slice(-1)[0];
+
+  lines.push(`Initial (${firstYear}):     ${stats.data[firstYear].builtup.area_km2.toFixed(2)} km² (${stats.data[firstYear].builtup.pct.toFixed(1)}%)`);
+  lines.push(`Latest Observed (${lastObserved}): ${stats.data[lastObserved].builtup.area_km2.toFixed(2)} km² (${stats.data[lastObserved].builtup.pct.toFixed(1)}%)`);
+  lines.push(`Predicted (${lastYear}):   ${stats.data[lastYear].builtup.area_km2.toFixed(2)} km² (${stats.data[lastYear].builtup.pct.toFixed(1)}%)`);
+  lines.push(``);
+  lines.push(`Total Growth: +${(stats.data[lastYear].builtup.area_km2 - stats.data[firstYear].builtup.area_km2).toFixed(2)} km²`);
+  lines.push(`Growth Rate:  ${(((stats.data[lastYear].builtup.area_km2 / stats.data[firstYear].builtup.area_km2) - 1) * 100).toFixed(1)}%`);
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────────────────────');
+  lines.push('YEAR-BY-YEAR DATA');
+  lines.push('───────────────────────────────────────────────────────────────────');
+  lines.push('');
+  lines.push('Year  Type  Built-up   Veg.    Crop.   Water   Coverage');
+  lines.push('            (km²)      (km²)   (km²)   (km²)   (%)');
+  lines.push('─────────────────────────────────────────────────────────────────');
+
+  stats.years.forEach(year => {
+    const data = stats.data[year];
+    const type = data.observed ? 'OBS' : 'PRED';
+    lines.push(
+      `${year}  ${type}   ${data.builtup.area_km2.toFixed(1).padStart(7)}  ` +
+      `${data.vegetation.area_km2.toFixed(1).padStart(6)}  ` +
+      `${data.cropland.area_km2.toFixed(1).padStart(6)}  ` +
+      `${data.water.area_km2.toFixed(1).padStart(5)}  ` +
+      `${data.builtup.pct.toFixed(1).padStart(5)}`
+    );
+  });
+
+  lines.push('');
+  lines.push('───────────────────────────────────────────────────────────────────');
+  lines.push('NOTES');
+  lines.push('───────────────────────────────────────────────────────────────────');
+  lines.push('• OBS = Observed data from satellite imagery (2000-2023)');
+  lines.push('• PRED = Model predictions (2024-2030)');
+  lines.push('• Classifications: Built-up, Vegetation, Cropland, Water');
+  lines.push('• Sensor transition: Landsat 7 to Landsat 8 in 2013');
+  lines.push('• Model: FlexConvLSTM with monotonic constraint');
+  lines.push('• Accuracy: 67% new built-up recall, 28% Figure of Merit');
+  lines.push('');
+  lines.push(`Generated: ${new Date().toISOString().split('T')[0]}`);
+  lines.push('═══════════════════════════════════════════════════════════════════');
+
+  downloadFile(lines.join('\n'), 'kathmandu_urban_growth_report.txt', 'text/plain');
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -272,6 +379,7 @@ export default function App() {
   const [sheetOpen, setSheetOpen] = useState(false);   // bottom sheet for stats
   const [menuOpen, setMenuOpen] = useState(false);      // mobile top menu
   const [aboutOpen, setAboutOpen] = useState(false);    // about project modal
+  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false); // download dropdown
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -307,6 +415,8 @@ export default function App() {
   const tileUrl = y=>showAllClasses?`${BASE}/tiles/${y}_tile.png`:`${BASE}/tiles/${y}_builtup.png`;
   const dataA = yearA?stats.data[yearA]:null;
   const dataB = yearB?stats.data[yearB]:null;
+  const isPredictedA = dataA && !dataA.observed;
+  const isPredictedB = dataB && !dataB.observed;
   const isConsecutive = yearA&&yearB&&Math.abs(years.indexOf(yearB)-years.indexOf(yearA))===1;
   const [sY,bY] = yearA&&yearB?(yearA<yearB?[yearA,yearB]:[yearB,yearA]):[yearA,yearB];
 
@@ -410,6 +520,16 @@ export default function App() {
         .badge-s{background:rgba(251,133,0,.12);color:#fb8500;border:1px solid rgba(251,133,0,.25);}
         .badge-b{background:rgba(72,149,239,.12);color:var(--blue);border:1px solid rgba(72,149,239,.25);}
 
+        /* ── Download Menu ── */
+        .download-menu{position:absolute;top:calc(100% + 4px);right:0;background:var(--bg2);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.4);z-index:999;min-width:200px;overflow:hidden;animation:slideDown .2s ease;}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .download-item{width:100%;background:none;border:none;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;border-bottom:1px solid var(--border);text-align:left;}
+        .download-item:last-child{border-bottom:none;}
+        .download-item:hover{background:var(--bg3);}
+        .download-item span{font-size:18px;flex-shrink:0;}
+        .dm-title{font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px;}
+        .dm-desc{font-size:10px;color:var(--text3);font-family:var(--mono);}
+
         /* ── Summary bar ── */
         .sumbar{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
         .si{padding:6px 10px;border-right:1px solid var(--border);}
@@ -459,11 +579,16 @@ export default function App() {
         .tick{position:absolute;top:0;transform:translateX(-50%);font-size:7.5px;font-family:var(--mono);color:var(--text3);pointer-events:none;white-space:nowrap;}
         .tick.sensor{color:#fb8500;}
         .tickl{position:absolute;top:13px;left:50%;width:2px;height:6px;background:#fb8500;border-radius:1px;transform:translateX(-50%);}
-        input[type=range]{-webkit-appearance:none;width:100%;background:transparent;cursor:pointer;}
+        input[type=range]{-webkit-appearance:none;appearance:none;width:100%;background:transparent;cursor:pointer;}
         input[type=range]::-webkit-slider-runnable-track{height:4px;background:linear-gradient(to right,var(--accent) 0%,var(--accent) var(--fill,0%),var(--bg4) var(--fill,0%),var(--bg4) 100%);border-radius:2px;}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);margin-top:-7px;border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(255,77,109,.25);}
+        input[type=range]::-moz-range-track{height:4px;background:var(--bg4);border-radius:2px;border:none;}
+        input[type=range]::-moz-range-progress{height:4px;background:var(--accent);border-radius:2px;}
+        input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(255,77,109,.25);cursor:pointer;}
         .op-sl::-webkit-slider-runnable-track{background:linear-gradient(to right,#4895ef,#ff4d6d)!important;}
         .op-sl::-webkit-slider-thumb{background:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.2)!important;}
+        .op-sl::-moz-range-track{background:linear-gradient(to right,#4895ef,#ff4d6d)!important;}
+        .op-sl::-moz-range-thumb{background:#fff!important;box-shadow:0 0 0 3px rgba(255,255,255,.2)!important;}
 
         /* ── Controls ── */
         .ctrls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0;}
@@ -575,12 +700,50 @@ export default function App() {
           <div className="logo">🛰️</div>
           <div>
             <div className="header-title">Kathmandu <span>Urban Growth</span></div>
-            <div className="header-sub">LAND USE & LAND COVER · 2000–2022</div>
+            <div className="header-sub">LAND USE & LAND COVER · 2000–2023</div>
           </div>
         </div>
-        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
+        <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end",position:"relative"}}>
           <span className="badge badge-b">LANDSAT 5/7/8/9</span>
           <span className="badge badge-s">⚡ L7→L8: 2013</span>
+
+          {/* Download Button */}
+          <div style={{position:"relative"}}>
+            <button
+              onClick={()=>setDownloadMenuOpen(v=>!v)}
+              style={{background:"rgba(251,133,0,.15)",border:"1px solid rgba(251,133,0,.3)",borderRadius:6,padding:"6px 12px",cursor:"pointer",fontSize:11,color:"#fb8500",fontFamily:"var(--mono)",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+              <Download size={12}/> EXPORT
+            </button>
+            {downloadMenuOpen && (
+              <>
+                <div onClick={()=>setDownloadMenuOpen(false)} style={{position:"fixed",inset:0,zIndex:998}}/>
+                <div className="download-menu">
+                  <button className="download-item" onClick={()=>{exportToCSV(stats);setDownloadMenuOpen(false);}}>
+                    <span>📊</span>
+                    <div>
+                      <div className="dm-title">CSV Spreadsheet</div>
+                      <div className="dm-desc">Excel-compatible data</div>
+                    </div>
+                  </button>
+                  <button className="download-item" onClick={()=>{exportToJSON(stats);setDownloadMenuOpen(false);}}>
+                    <span>⚙️</span>
+                    <div>
+                      <div className="dm-title">JSON Data</div>
+                      <div className="dm-desc">Raw structured data</div>
+                    </div>
+                  </button>
+                  <button className="download-item" onClick={()=>{exportToTextReport(stats);setDownloadMenuOpen(false);}}>
+                    <span>📄</span>
+                    <div>
+                      <div className="dm-title">Text Report</div>
+                      <div className="dm-desc">Formatted summary</div>
+                    </div>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
           <button onClick={()=>setAboutOpen(true)} style={{background:"rgba(76,201,240,.15)",border:"1px solid rgba(76,201,240,.3)",borderRadius:6,padding:"6px 12px",cursor:"pointer",fontSize:11,color:"#4cc9f0",fontFamily:"var(--mono)",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
             ℹ️ ABOUT
           </button>
@@ -589,9 +752,9 @@ export default function App() {
 
       {/* ── Summary bar ── */}
       <div className="sumbar">
-        <div className="si"><div className="sl">BUILT-UP 2022</div><div className="sv r">{stats.data[2022].builtup.area_km2.toFixed(0)}<span style={{fontSize:10}}> km²</span></div><div className="ss">{stats.data[2022].builtup.pct.toFixed(1)}%</div></div>
+        <div className="si"><div className="sl">BUILT-UP 2023</div><div className="sv r">{stats.data[2023].builtup.area_km2.toFixed(0)}<span style={{fontSize:10}}> km²</span></div><div className="ss">{stats.data[2023].builtup.pct.toFixed(1)}%</div></div>
         <div className="si"><div className="sl">GROWTH</div><div className="sv gold">+{totalGrowth.toFixed(0)}<span style={{fontSize:10}}> km²</span></div><div className="ss">since 2000</div></div>
-        <div className="si"><div className="sl">VEGETATION</div><div className="sv g">{stats.data[2022].vegetation.pct.toFixed(1)}<span style={{fontSize:10}}>%</span></div><div className="ss">{stats.data[2022].vegetation.area_km2.toFixed(0)} km²</div></div>
+        <div className="si"><div className="sl">VEGETATION</div><div className="sv g">{stats.data[2023].vegetation.pct.toFixed(1)}<span style={{fontSize:10}}>%</span></div><div className="ss">{stats.data[2023].vegetation.area_km2.toFixed(0)} km²</div></div>
         <div className="si"><div className="sl">VALLEY</div><div className="sv b">1,039<span style={{fontSize:10}}> km²</span></div><div className="ss">total area</div></div>
       </div>
 
@@ -622,6 +785,14 @@ export default function App() {
                     <div key={it.label} className="li"><div className="ld" style={{background:it.color}}/>{it.label}</div>
                   ))}
                 </div>
+                {isPredicted && (
+                  <div style={{position:"absolute",bottom:48,right:55,maxWidth:180,background:"rgba(7,13,25,.88)",backdropFilter:"blur(8px)",border:"1px solid rgba(76,201,240,.3)",borderRadius:7,padding:"7px 10px",zIndex:5,pointerEvents:"none"}}>
+                    <div style={{fontSize:9,fontFamily:"var(--mono)",color:"#4cc9f0",fontWeight:600,marginBottom:3,display:"flex",alignItems:"center",gap:4}}>⚠️ PREDICTION</div>
+                    <div style={{fontSize:9,color:"var(--text2)",lineHeight:1.4}}>
+                      Model prediction based on 2000-2023 patterns
+                    </div>
+                  </div>
+                )}
               </ZoomableMap>
 
               <div className="sl-sec">
@@ -681,6 +852,14 @@ export default function App() {
                     <div key={it.label} className="li"><div className="ld" style={{background:it.color}}/>{it.label}</div>
                   ))}
                 </div>
+                {isPredicted && (
+                  <div style={{position:"absolute",bottom:48,right:55,maxWidth:200,background:"rgba(7,13,25,.88)",backdropFilter:"blur(8px)",border:"1px solid rgba(76,201,240,.3)",borderRadius:8,padding:"8px 12px",zIndex:5,pointerEvents:"none"}}>
+                    <div style={{fontSize:10,fontFamily:"var(--mono)",color:"#4cc9f0",fontWeight:600,marginBottom:4,display:"flex",alignItems:"center",gap:5}}>⚠️ PREDICTION</div>
+                    <div style={{fontSize:10,color:"var(--text2)",lineHeight:1.5}}>
+                      Model prediction based on historical patterns (2000-2023)
+                    </div>
+                  </div>
+                )}
               </ZoomableMap>
               <div className="sl-sec">
                 <div className="sl-ticks">
@@ -708,16 +887,13 @@ export default function App() {
                     ⚠️ PREDICTION
                   </div>
                   <div style={{fontSize:11,color:"var(--text2)",lineHeight:1.6,marginBottom:10}}>
-                    This is a <strong style={{color:"#4cc9f0"}}>model prediction</strong> based on historical growth patterns (2000-2022).
+                    This is a <strong style={{color:"#4cc9f0"}}>model prediction</strong> based on historical growth patterns (2000-2023).
                   </div>
                   <div style={{fontSize:10,color:"var(--text3)",lineHeight:1.7,marginBottom:8,paddingLeft:12,borderLeft:"2px solid rgba(76,201,240,.3)"}}>
                     ✓ FlexConvLSTM neural network<br/>
                     ✓ 67% accuracy on new builtup<br/>
                     ✓ 28% Figure of Merit (FoM)<br/>
                     ✓ Monotonic constraint applied
-                  </div>
-                  <div style={{fontSize:10,color:"#fb8500",marginTop:10,paddingTop:10,borderTop:"1px solid rgba(76,201,240,.1)"}}>
-                    <strong>Growth from 2022:</strong> +{(currentData.builtup.area_km2 - stats.data[2022].builtup.area_km2).toFixed(1)} km²
                   </div>
                 </div>
               )}
@@ -752,11 +928,11 @@ export default function App() {
               </div>
 
               {/* Map views */}
-              {compareMode==="swipe"&&yearA&&yearB&&<SwipeCompare urlA={`${BASE}/tiles/${yearA}_tile.png`} urlB={`${BASE}/tiles/${yearB}_tile.png`} yearA={yearA} yearB={yearB}/>}
+              {compareMode==="swipe"&&yearA&&yearB&&<SwipeCompare urlA={`${BASE}/tiles/${yearA}_tile.png`} urlB={`${BASE}/tiles/${yearB}_tile.png`} yearA={yearA} yearB={yearB} isPredictedA={isPredictedA} isPredictedB={isPredictedB}/>}
               {compareMode==="split"&&(
                 <div className="split-wrap">
-                  <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearA}</div></ZoomableMap>
-                  <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearB}</div></ZoomableMap>
+                  <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearA}{isPredictedA&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</div></ZoomableMap>
+                  <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearB}{isPredictedB&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</div></ZoomableMap>
                 </div>
               )}
               {compareMode==="opacity"&&(
@@ -765,9 +941,9 @@ export default function App() {
                     <img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/>
                     <img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" style={{opacity:opacityB/100}} onError={e=>e.target.style.opacity=0}/>
                     <div style={{position:"absolute",top:10,left:10,background:"rgba(7,13,25,.82)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,.08)",borderRadius:7,padding:"5px 10px",zIndex:5,pointerEvents:"none",display:"flex",alignItems:"center",gap:6}}>
-                      <span style={{fontSize:11,fontFamily:"var(--mono)",color:"#4895ef",fontWeight:700}}>{yearA}</span>
+                      <span style={{fontSize:11,fontFamily:"var(--mono)",color:"#4895ef",fontWeight:700}}>{yearA}{isPredictedA&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</span>
                       <span style={{fontSize:9,color:"var(--text3)"}}>→</span>
-                      <span style={{fontSize:11,fontFamily:"var(--mono)",color:"#ff4d6d",fontWeight:700}}>{yearB}</span>
+                      <span style={{fontSize:11,fontFamily:"var(--mono)",color:"#ff4d6d",fontWeight:700}}>{yearB}{isPredictedB&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</span>
                     </div>
                   </ZoomableMap>
                   <div className="op-ctrl">
@@ -817,7 +993,7 @@ export default function App() {
                 </div>
                 {compareMode==="split"&&<button className={`cbtn ${showChange?"on":""}`} disabled={!isConsecutive} onClick={()=>isConsecutive&&setShowChange(v=>!v)} style={{opacity:isConsecutive?1:.35,cursor:isConsecutive?"pointer":"not-allowed"}}><AlertCircle size={11}/>Change Layer{!isConsecutive&&<span style={{fontSize:9,opacity:.6}}>(consec.)</span>}</button>}
               </div>
-              {compareMode==="swipe"&&yearA&&yearB&&<SwipeCompare urlA={`${BASE}/tiles/${yearA}_tile.png`} urlB={`${BASE}/tiles/${yearB}_tile.png`} yearA={yearA} yearB={yearB}/>}
+              {compareMode==="swipe"&&yearA&&yearB&&<SwipeCompare urlA={`${BASE}/tiles/${yearA}_tile.png`} urlB={`${BASE}/tiles/${yearB}_tile.png`} yearA={yearA} yearB={yearB} isPredictedA={isPredictedA} isPredictedB={isPredictedB}/>}
               {compareMode==="split"&&(
                 <div className="split-wrap">
                   {showChange&&isConsecutive?(
@@ -831,8 +1007,8 @@ export default function App() {
                     </ZoomableMap>
                   ):(
                     <>
-                      <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearA}</div></ZoomableMap>
-                      <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearB}</div></ZoomableMap>
+                      <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearA}{isPredictedA&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</div></ZoomableMap>
+                      <ZoomableMap className="split-half"><img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/><div className="split-lbl">{yearB}{isPredictedB&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</div></ZoomableMap>
                     </>
                   )}
                 </div>
@@ -843,9 +1019,9 @@ export default function App() {
                     <img className="fi" src={`${BASE}/tiles/${yearA}_tile.png`} alt="" onError={e=>e.target.style.opacity=0} onLoad={e=>e.target.style.opacity=1}/>
                     <img className="fi" src={`${BASE}/tiles/${yearB}_tile.png`} alt="" style={{opacity:opacityB/100}} onError={e=>e.target.style.opacity=0}/>
                     <div style={{position:"absolute",top:12,left:12,background:"rgba(7,13,25,.82)",backdropFilter:"blur(8px)",border:"1px solid rgba(255,255,255,.08)",borderRadius:8,padding:"5px 11px",zIndex:5,pointerEvents:"none",display:"flex",alignItems:"center",gap:8}}>
-                      <span style={{fontSize:12,fontFamily:"var(--mono)",color:"#4895ef",fontWeight:700}}>{yearA}</span>
+                      <span style={{fontSize:12,fontFamily:"var(--mono)",color:"#4895ef",fontWeight:700}}>{yearA}{isPredictedA&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</span>
                       <span style={{fontSize:10,color:"var(--text3)"}}>→</span>
-                      <span style={{fontSize:12,fontFamily:"var(--mono)",color:"#ff4d6d",fontWeight:700}}>{yearB}</span>
+                      <span style={{fontSize:12,fontFamily:"var(--mono)",color:"#ff4d6d",fontWeight:700}}>{yearB}{isPredictedB&&<span style={{fontSize:7,marginLeft:3,background:"rgba(255,183,3,.15)",border:"1px solid rgba(255,183,3,.4)",color:"var(--gold)",borderRadius:3,padding:"1px 3px"}}>PRED</span>}</span>
                       <span style={{fontSize:9,fontFamily:"var(--mono)",color:"var(--text3)",marginLeft:4}}>{yearB}: {opacityB}%</span>
                     </div>
                   </ZoomableMap>
@@ -904,7 +1080,7 @@ export default function App() {
             <div style={{marginBottom:20}}>
               <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>📊 DATA SOURCES</div>
               <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.7}}>
-                • <strong>Satellite Data:</strong> Landsat Collection 2 (2000-2022)<br/>
+                • <strong>Satellite Data:</strong> Landsat Collection 2 (2000-2023)<br/>
                 • <strong>Processing Platform:</strong> Google Earth Engine<br/>
                 • <strong>Spatial Resolution:</strong> 30 meters per pixel<br/>
                 • <strong>Study Area:</strong> 1,039 km² (Kathmandu Valley)<br/>
@@ -942,7 +1118,7 @@ export default function App() {
 
             {/* Footer */}
             <div style={{fontSize:11,color:"var(--text3)",paddingTop:16,borderTop:"1px solid var(--border)",textAlign:"center"}}>
-              Built with Claude Code · Last updated: March 2026
+              Last updated: March 2026
             </div>
           </div>
         </div>
@@ -950,7 +1126,7 @@ export default function App() {
 
       <footer className="footer">
         <div style={{display:"flex",flexDirection:"column",gap:4}}>
-          <span className="fi-t">DATA: LANDSAT COLLECTION 2 (2000-2022) · GOOGLE EARTH ENGINE</span>
+          <span className="fi-t">DATA: LANDSAT COLLECTION 2 (2000-2023) · GOOGLE EARTH ENGINE</span>
           <span className="fi-t" style={{fontSize:9,color:"var(--text3)"}}>MODEL: ConvLSTM Neural Network · PyTorch · 87% New Built-up Recall</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:6}}><div className="fdot"/><span className="fi-t">{isMobile?"PINCH TO ZOOM":"SCROLL TO ZOOM · DRAG TO PAN"}</span></div>
