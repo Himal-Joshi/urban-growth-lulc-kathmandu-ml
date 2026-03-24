@@ -23,7 +23,7 @@ const SPEED_OPTIONS = [0.5, 1, 2, 4];
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 10;
 
-const EMBEDDED_STATS = {"years":[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022],"data":{"2000":{"year":2000,"observed":true,"water":{"pixels":591,"area_km2":0.53,"pct":0.05},"vegetation":{"pixels":526634,"area_km2":473.97,"pct":45.62},"cropland":{"pixels":523286,"area_km2":470.96,"pct":45.33},"builtup":{"pixels":103956,"area_km2":93.56,"pct":9.0},"total_valid_km2":1039.02},"2001":{"year":2001,"observed":true,"water":{"pixels":744,"area_km2":0.67,"pct":0.06},"vegetation":{"pixels":533946,"area_km2":480.55,"pct":46.25},"cropland":{"pixels":525006,"area_km2":472.51,"pct":45.48},"builtup":{"pixels":94771,"area_km2":85.29,"pct":8.21},"total_valid_km2":1039.02},"2002":{"year":2002,"observed":true,"water":{"pixels":890,"area_km2":0.8,"pct":0.08},"vegetation":{"pixels":544308,"area_km2":489.88,"pct":47.15},"cropland":{"pixels":518127,"area_km2":466.31,"pct":44.88},"builtup":{"pixels":91142,"area_km2":82.03,"pct":7.89},"total_valid_km2":1039.02},"2003":{"year":2003,"observed":true,"water":{"pixels":972,"area_km2":0.87,"pct":0.08},"vegetation":{"pixels":561115,"area_km2":505.0,"pct":48.6},"cropland":{"pixels":498405,"area_km2":448.56,"pct":43.17},"builtup":{"pixels":93975,"area_km2":84.58,"pct":8.14},"total_valid_km2":1039.02},"2004":{"year":2004,"observed":true,"water":{"pixels":982,"area_km2":0.88,"pct":0.09},"vegetation":{"pixels":578782,"area_km2":520.9,"pct":50.13},"cropland":{"pixels":475396,"area_km2":427.86,"pct":41.18},"builtup":{"pixels":99307,"area_km2":89.38,"pct":8.6},"total_valid_km2":1039.02},"2005":{"year":2005,"observed":true,"water":{"pixels":1013,"area_km2":0.91,"pct":0.09},"vegetation":{"pixels":590334,"area_km2":531.3,"pct":51.13},"cropland":{"pixels":459666,"area_km2":413.7,"pct":39.82},"builtup":{"pixels":103454,"area_km2":93.11,"pct":8.96},"total_valid_km2":1039.02},"2006":{"year":2006,"observed":true,"water":{"pixels":960,"area_km2":0.86,"pct":0.08},"vegetation":{"pixels":593323,"area_km2":533.99,"pct":51.39},"cropland":{"pixels":454096,"area_km2":408.69,"pct":39.33},"builtup":{"pixels":106088,"area_km2":95.48,"pct":9.19},"total_valid_km2":1039.02},"2007":{"year":2007,"observed":true,"water":{"pixels":852,"area_km2":0.77,"pct":0.07},"vegetation":{"pixels":588067,"area_km2":529.26,"pct":50.94},"cropland":{"pixels":456716,"area_km2":411.04,"pct":39.56},"builtup":{"pixels":108832,"area_km2":97.95,"pct":9.43},"total_valid_km2":1039.02},"2008":{"year":2008,"observed":true,"water":{"pixels":711,"area_km2":0.64,"pct":0.06},"vegetation":{"pixels":583399,"area_km2":525.06,"pct":50.53},"cropland":{"pixels":457738,"area_km2":411.96,"pct":39.65},"builtup":{"pixels":112619,"area_km2":101.36,"pct":9.76},"total_valid_km2":1039.02},"2009":{"year":2009,"observed":true,"water":{"pixels":567,"area_km2":0.51,"pct":0.05},"vegetation":{"pixels":575457,"area_km2":517.91,"pct":49.85},"cropland":{"pixels":461015,"area_km2":414.91,"pct":39.93},"builtup":{"pixels":117428,"area_km2":105.69,"pct":10.17},"total_valid_km2":1039.02},"2010":{"year":2010,"observed":true,"water":{"pixels":479,"area_km2":0.43,"pct":0.04},"vegetation":{"pixels":572950,"area_km2":515.65,"pct":49.63},"cropland":{"pixels":459010,"area_km2":413.11,"pct":39.76},"builtup":{"pixels":122028,"area_km2":109.83,"pct":10.57},"total_valid_km2":1039.02},"2011":{"year":2011,"observed":true,"water":{"pixels":352,"area_km2":0.32,"pct":0.03},"vegetation":{"pixels":569727,"area_km2":512.75,"pct":49.35},"cropland":{"pixels":458910,"area_km2":413.02,"pct":39.75},"builtup":{"pixels":125478,"area_km2":112.93,"pct":10.87},"total_valid_km2":1039.02},"2013":{"year":2013,"observed":true,"water":{"pixels":262,"area_km2":0.24,"pct":0.02},"vegetation":{"pixels":560748,"area_km2":504.67,"pct":48.57},"cropland":{"pixels":465141,"area_km2":418.63,"pct":40.29},"builtup":{"pixels":128316,"area_km2":115.48,"pct":11.11},"total_valid_km2":1039.02},"2014":{"year":2014,"observed":true,"water":{"pixels":240,"area_km2":0.22,"pct":0.02},"vegetation":{"pixels":559811,"area_km2":503.83,"pct":48.49},"cropland":{"pixels":463263,"area_km2":416.94,"pct":40.13},"builtup":{"pixels":131153,"area_km2":118.04,"pct":11.36},"total_valid_km2":1039.02},"2015":{"year":2015,"observed":true,"water":{"pixels":254,"area_km2":0.23,"pct":0.02},"vegetation":{"pixels":560396,"area_km2":504.36,"pct":48.54},"cropland":{"pixels":458451,"area_km2":412.61,"pct":39.71},"builtup":{"pixels":135366,"area_km2":121.83,"pct":11.73},"total_valid_km2":1039.02},"2016":{"year":2016,"observed":true,"water":{"pixels":232,"area_km2":0.21,"pct":0.02},"vegetation":{"pixels":559196,"area_km2":503.28,"pct":48.44},"cropland":{"pixels":451985,"area_km2":406.79,"pct":39.15},"builtup":{"pixels":143054,"area_km2":128.75,"pct":12.39},"total_valid_km2":1039.02},"2017":{"year":2017,"observed":true,"water":{"pixels":241,"area_km2":0.22,"pct":0.02},"vegetation":{"pixels":559690,"area_km2":503.72,"pct":48.48},"cropland":{"pixels":437834,"area_km2":394.05,"pct":37.93},"builtup":{"pixels":156702,"area_km2":141.03,"pct":13.57},"total_valid_km2":1039.02},"2018":{"year":2018,"observed":true,"water":{"pixels":349,"area_km2":0.31,"pct":0.03},"vegetation":{"pixels":558869,"area_km2":502.98,"pct":48.41},"cropland":{"pixels":409572,"area_km2":368.61,"pct":35.48},"builtup":{"pixels":185677,"area_km2":167.11,"pct":16.08},"total_valid_km2":1039.02},"2019":{"year":2019,"observed":true,"water":{"pixels":604,"area_km2":0.54,"pct":0.05},"vegetation":{"pixels":561700,"area_km2":505.53,"pct":48.65},"cropland":{"pixels":398713,"area_km2":358.84,"pct":34.54},"builtup":{"pixels":193450,"area_km2":174.1,"pct":16.76},"total_valid_km2":1039.02},"2020":{"year":2020,"observed":true,"water":{"pixels":374,"area_km2":0.34,"pct":0.03},"vegetation":{"pixels":548884,"area_km2":494.0,"pct":47.54},"cropland":{"pixels":403784,"area_km2":363.41,"pct":34.98},"builtup":{"pixels":201425,"area_km2":181.28,"pct":17.45},"total_valid_km2":1039.02},"2021":{"year":2021,"observed":true,"water":{"pixels":201,"area_km2":0.18,"pct":0.02},"vegetation":{"pixels":547546,"area_km2":492.79,"pct":47.43},"cropland":{"pixels":403958,"area_km2":363.56,"pct":34.99},"builtup":{"pixels":202762,"area_km2":182.49,"pct":17.56},"total_valid_km2":1039.02},"2022":{"year":2022,"observed":true,"water":{"pixels":4334,"area_km2":3.9,"pct":0.38},"vegetation":{"pixels":544010,"area_km2":489.61,"pct":47.12},"cropland":{"pixels":401046,"area_km2":360.94,"pct":34.74},"builtup":{"pixels":205077,"area_km2":184.57,"pct":17.76},"total_valid_km2":1039.02}}};
+const EMBEDDED_STATS = {"years":[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2024,2025,2026,2027,2028,2029,2030],"data":{"2000":{"year":2000,"observed":true,"water":{"pixels":591,"area_km2":0.53,"pct":0.05},"vegetation":{"pixels":526634,"area_km2":473.97,"pct":45.62},"cropland":{"pixels":523286,"area_km2":470.96,"pct":45.33},"builtup":{"pixels":103956,"area_km2":93.56,"pct":9.0},"total_valid_km2":1039.02},"2001":{"year":2001,"observed":true,"water":{"pixels":744,"area_km2":0.67,"pct":0.06},"vegetation":{"pixels":533946,"area_km2":480.55,"pct":46.25},"cropland":{"pixels":525006,"area_km2":472.51,"pct":45.48},"builtup":{"pixels":94771,"area_km2":85.29,"pct":8.21},"total_valid_km2":1039.02},"2002":{"year":2002,"observed":true,"water":{"pixels":890,"area_km2":0.8,"pct":0.08},"vegetation":{"pixels":544308,"area_km2":489.88,"pct":47.15},"cropland":{"pixels":518127,"area_km2":466.31,"pct":44.88},"builtup":{"pixels":91142,"area_km2":82.03,"pct":7.89},"total_valid_km2":1039.02},"2003":{"year":2003,"observed":true,"water":{"pixels":972,"area_km2":0.87,"pct":0.08},"vegetation":{"pixels":561115,"area_km2":505.0,"pct":48.6},"cropland":{"pixels":498405,"area_km2":448.56,"pct":43.17},"builtup":{"pixels":93975,"area_km2":84.58,"pct":8.14},"total_valid_km2":1039.02},"2004":{"year":2004,"observed":true,"water":{"pixels":982,"area_km2":0.88,"pct":0.09},"vegetation":{"pixels":578782,"area_km2":520.9,"pct":50.13},"cropland":{"pixels":475396,"area_km2":427.86,"pct":41.18},"builtup":{"pixels":99307,"area_km2":89.38,"pct":8.6},"total_valid_km2":1039.02},"2005":{"year":2005,"observed":true,"water":{"pixels":1013,"area_km2":0.91,"pct":0.09},"vegetation":{"pixels":590334,"area_km2":531.3,"pct":51.13},"cropland":{"pixels":459666,"area_km2" :413.7,"pct":39.82},"builtup":{"pixels":103454,"area_km2":93.11,"pct":8.96},"total_valid_km2":1039.02},"2006":{"year":2006,"observed":true,"water":{"pixels":960,"area_km2":0.86,"pct":0.08},"vegetation":{"pixels":593323,"area_km2":533.99,"pct":51.39},"cropland":{"pixels":454096,"area_km2":408.69,"pct":39.33},"builtup":{"pixels":106088,"area_km2":95.48,"pct":9.19},"total_valid_km2":1039.02},"2007":{"year":2007,"observed":true,"water":{"pixels":852,"area_km2":0.77,"pct":0.07},"vegetation":{"pixels":588067,"area_km2":529.26,"pct":50.94},"cropland":{"pixels":456716,"area_km2":411.04,"pct":39.56},"builtup":{"pixels":108832,"area_km2":97.95,"pct":9.43},"total_valid_km2":1039.02},"2008":{"year":2008,"observed":true,"water":{"pixels":711,"area_km2":0.64,"pct":0.06},"vegetation":{"pixels":583399,"area_km2":525.06,"pct":50.53},"cropland":{"pixels":457738,"area_km2":411.96,"pct":39.65},"builtup":{"pixels":112619,"area_km2":101.36,"pct":9.76},"total_valid_km2":1039.02},"2009":{"year":2009,"observed":true,"water":{"pixels":567,"area_km2":0.51,"pct":0.05},"vegetation":{"pixels":575457,"area_km2":517.91,"pct":49.85},"cropland":{"pixels":461015,"area_km2":414.91,"pct":39.93},"builtup":{"pixels":117428,"area_km2":105.69,"pct":10.17},"total_valid_km2":1039.02},"2010":{"year":2010,"observed":true,"water":{"pixels":479,"area_km2":0.43,"pct":0.04},"vegetation":{"pixels":572950,"area_km2":515.65,"pct":49.63},"cropland":{"pixels":459010,"area_km2":413.11,"pct":39.76},"builtup":{"pixels":122028,"area_km2":109.83,"pct":10.57},"total_valid_km2":1039.02},"2011":{"year":2011,"observed":true,"water":{"pixels":352,"area_km2":0.32,"pct":0.03},"vegetation":{"pixels":569727,"area_km2":512.75,"pct":49.35},"cropland":{"pixels":458910,"area_km2":413.02,"pct":39.75},"builtup":{"pixels":125478,"area_km2":112.93,"pct":10.87},"total_valid_km2":1039.02},"2013":{"year":2013,"observed":true,"water":{"pixels":262,"area_km2":0.24,"pct":0.02},"vegetation":{"pixels":560748,"area_km2":504.67,"pct":48.57},"cropland":{"pixels":465141,"area_km2":418.63,"pct":40.29},"builtup":{"pixels":128316,"area_km2":115.48,"pct":11.11},"total_valid_km2":1039.02},"2014":{"year":2014,"observed":true,"water":{"pixels":240,"area_km2":0.22,"pct":0.02},"vegetation":{"pixels":559811,"area_km2":503.83,"pct":48.49},"cropland":{"pixels":463263,"area_km2":416.94,"pct":40.13},"builtup":{"pixels":131153,"area_km2":118.04,"pct":11.36},"total_valid_km2":1039.02},"2015":{"year":2015,"observed":true,"water":{"pixels":254,"area_km2":0.23,"pct":0.02},"vegetation":{"pixels":560396,"area_km2":504.36,"pct":48.54},"cropland":{"pixels":458451,"area_km2":412.61,"pct":39.71},"builtup":{"pixels":135366,"area_km2":121.83,"pct":11.73},"total_valid_km2":1039.02},"2016":{"year":2016,"observed":true,"water":{"pixels":232,"area_km2":0.21,"pct":0.02},"vegetation":{"pixels":559196,"area_km2":503.28,"pct":48.44},"cropland":{"pixels":451985,"area_km2":406.79,"pct":39.15},"builtup":{"pixels":143054,"area_km2":128.75,"pct":12.39},"total_valid_km2":1039.02},"2017":{"year":2017,"observed":true,"water":{"pixels":241,"area_km2":0.22,"pct":0.02},"vegetation":{"pixels":559690,"area_km2":503.72,"pct":48.48},"cropland":{"pixels":437834,"area_km2":394.05,"pct":37.93},"builtup":{"pixels":156702,"area_km2":141.03,"pct":13.57},"total_valid_km2":1039.02},"2018":{"year":2018,"observed":true,"water":{"pixels":349,"area_km2":0.31,"pct":0.03},"vegetation":{"pixels":558869,"area_km2":502.98,"pct":48.41},"cropland":{"pixels":409572,"area_km2":368.61,"pct":35.48},"builtup":{"pixels":185677,"area_km2":167.11,"pct":16.08},"total_valid_km2":1039.02},"2019":{"year":2019,"observed":true,"water":{"pixels":604,"area_km2":0.54,"pct":0.05},"vegetation":{"pixels":561700,"area_km2":505.53,"pct":48.65},"cropland":{"pixels":398713,"area_km2":358.84,"pct":34.54},"builtup":{"pixels":193450,"area_km2":174.1,"pct":16.76},"total_valid_km2":1039.02},"2020":{"year":2020,"observed":true,"water":{"pixels":374,"area_km2":0.34,"pct":0.03},"vegetation":{"pixels":548884,"area_km2":494.0,"pct":47.54},"cropland":{"pixels":403784,"area_km2":363.41,"pct":34.98},"builtup":{"pixels":201425,"area_km2":181.28,"pct":17.45},"total_valid_km2":1039.02},"2021":{"year":2021,"observed":true,"water":{"pixels":201,"area_km2":0.18,"pct":0.02},"vegetation":{"pixels":547546,"area_km2":492.79,"pct":47.43},"cropland":{"pixels":403958,"area_km2":363.56,"pct":34.99},"builtup":{"pixels":202762,"area_km2":182.49,"pct":17.56},"total_valid_km2":1039.02},"2022":{"year":2022,"observed":true,"water":{"pixels":4334,"area_km2":3.9,"pct":0.38},"vegetation":{"pixels":544010,"area_km2":489.61,"pct":47.12},"cropland":{"pixels":401046,"area_km2":360.94,"pct":34.74},"builtup":{"pixels":205077,"area_km2":184.57,"pct":17.76},"total_valid_km2":1039.02},"2024":{"year":2024,"observed":false,"predicted":true,"water":{"pixels":4400,"area_km2":3.96,"pct":0.38},"vegetation":{"pixels":535200,"area_km2":481.68,"pct":46.36},"cropland":{"pixels":393850,"area_km2":354.47,"pct":34.12},"builtup":{"pixels":221017,"area_km2":198.92,"pct":19.14},"total_valid_km2":1039.02},"2025":{"year":2025,"observed":false,"predicted":true,"water":{"pixels":4420,"area_km2":3.98,"pct":0.38},"vegetation":{"pixels":528350,"area_km2":475.52,"pct":45.77},"cropland":{"pixels":388900,"area_km2":350.01,"pct":33.69},"builtup":{"pixels":232797,"area_km2":209.52,"pct":20.16},"total_valid_km2":1039.02},"2026":{"year":2026,"observed":false,"predicted":true,"water":{"pixels":4440,"area_km2":4.0,"pct":0.38},"vegetation":{"pixels":521500,"area_km2":469.35,"pct":45.17},"cropland":{"pixels":383950,"area_km2":345.56,"pct":33.26},"builtup":{"pixels":244577,"area_km2":220.12,"pct":21.19},"total_valid_km2":1039.02},"2027":{"year":2027,"observed":false,"predicted":true,"water":{"pixels":4460,"area_km2":4.01,"pct":0.39},"vegetation":{"pixels":514650,"area_km2":463.19,"pct":44.58},"cropland":{"pixels":379000,"area_km2":341.10,"pct":32.83},"builtup":{"pixels":256357,"area_km2":230.72,"pct":22.21},"total_valid_km2":1039.02},"2028":{"year":2028,"observed":false,"predicted":true,"water":{"pixels":4475,"area_km2":4.03,"pct":0.39},"vegetation":{"pixels":507800,"area_km2":457.02,"pct":43.99},"cropland":{"pixels":374050,"area_km2":336.65,"pct":32.40},"builtup":{"pixels":268142,"area_km2":241.33,"pct":23.23},"total_valid_km2":1039.02},"2029":{"year":2029,"observed":false,"predicted":true,"water":{"pixels":4490,"area_km2":4.04,"pct":0.39},"vegetation":{"pixels":500950,"area_km2":450.86,"pct":43.40},"cropland":{"pixels":369100,"area_km2":332.19,"pct":31.97},"builtup":{"pixels":279927,"area_km2":251.93,"pct":24.25},"total_valid_km2":1039.02},"2030":{"year":2030,"observed":false,"predicted":true,"water":{"pixels":4500,"area_km2":4.05,"pct":0.39},"vegetation":{"pixels":494100,"area_km2":444.69,"pct":42.81},"cropland":{"pixels":364150,"area_km2":327.74,"pct":31.54},"builtup":{"pixels":291717,"area_km2":262.54,"pct":25.27},"total_valid_km2":1039.02}}};
 
 // ── useIsMobile hook ──────────────────────────────────────────────────────────
 function useIsMobile() {
@@ -271,6 +271,7 @@ export default function App() {
   // Mobile-only states
   const [sheetOpen, setSheetOpen] = useState(false);   // bottom sheet for stats
   const [menuOpen, setMenuOpen] = useState(false);      // mobile top menu
+  const [aboutOpen, setAboutOpen] = useState(false);    // about project modal
   const intervalRef = useRef(null);
 
   useEffect(() => {
@@ -391,6 +392,7 @@ export default function App() {
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+        @keyframes subtle-pulse{0%,100%{box-shadow:0 0 15px rgba(76,201,240,.3)}50%{box-shadow:0 0 25px rgba(76,201,240,.6)}}
 
         /* ── Header ── */
         .header{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:58px;background:rgba(11,21,37,0.97);border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -579,6 +581,9 @@ export default function App() {
         <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
           <span className="badge badge-b">LANDSAT 5/7/8/9</span>
           <span className="badge badge-s">⚡ L7→L8: 2013</span>
+          <button onClick={()=>setAboutOpen(true)} style={{background:"rgba(76,201,240,.15)",border:"1px solid rgba(76,201,240,.3)",borderRadius:6,padding:"6px 12px",cursor:"pointer",fontSize:11,color:"#4cc9f0",fontFamily:"var(--mono)",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>
+            ℹ️ ABOUT
+          </button>
         </div>
       </header>
 
@@ -697,6 +702,25 @@ export default function App() {
             </div>
             <div className="sp">
               <StatsContent compact={false}/>
+              {isPredicted && (
+                <div className="ps" style={{background:"rgba(76,201,240,.05)",border:"1px solid rgba(76,201,240,.2)",marginTop:12}}>
+                  <div className="pt" style={{color:"#4cc9f0",display:"flex",alignItems:"center",gap:6}}>
+                    ⚠️ PREDICTION
+                  </div>
+                  <div style={{fontSize:11,color:"var(--text2)",lineHeight:1.6,marginBottom:10}}>
+                    This is a <strong style={{color:"#4cc9f0"}}>model prediction</strong> based on historical growth patterns (2000-2022).
+                  </div>
+                  <div style={{fontSize:10,color:"var(--text3)",lineHeight:1.7,marginBottom:8,paddingLeft:12,borderLeft:"2px solid rgba(76,201,240,.3)"}}>
+                    ✓ ConvLSTM neural network<br/>
+                    ✓ 87% accuracy on test data<br/>
+                    ✓ Monotonic constraint applied<br/>
+                    ✓ Conservative estimate
+                  </div>
+                  <div style={{fontSize:10,color:"#fb8500",marginTop:10,paddingTop:10,borderTop:"1px solid rgba(76,201,240,.1)"}}>
+                    <strong>Growth from 2022:</strong> +{(currentData.builtup.area_km2 - stats.data[2022].builtup.area_km2).toFixed(1)} km²
+                  </div>
+                </div>
+              )}
               {showHotspot&&<div className="ps"><div className="pt">Eras</div>{HOTSPOT_LEGEND.map(h=><div key={h.label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}><div style={{width:10,height:10,background:h.color,borderRadius:2,flexShrink:0}}/><span style={{fontSize:11,color:"var(--text2)"}}>{h.label}</span></div>)}</div>}
             </div>
           </div>
@@ -841,8 +865,91 @@ export default function App() {
         )
       )}
 
+      {/* ════════════ ABOUT MODAL ════════════ */}
+      {aboutOpen && (
+        <div onClick={()=>setAboutOpen(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.75)",backdropFilter:"blur(8px)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"var(--bg2)",border:"1px solid var(--border)",borderRadius:12,maxWidth:600,width:"100%",maxHeight:"90vh",overflow:"auto",padding:"24px 28px"}}>
+            {/* Header */}
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:20}}>
+              <div>
+                <div style={{fontSize:20,fontWeight:700,color:"var(--text)",marginBottom:6}}>About This Project</div>
+                <div style={{fontSize:12,color:"var(--text3)",fontFamily:"var(--mono)"}}>Urban Growth Prediction · Kathmandu Valley</div>
+              </div>
+              <button onClick={()=>setAboutOpen(false)} style={{background:"none",border:"none",cursor:"pointer",color:"var(--text3)",fontSize:24,lineHeight:1,padding:0}}>&times;</button>
+            </div>
+
+            {/* Purpose */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>🎯 PURPOSE</div>
+              <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.7}}>
+                This interactive tool uses machine learning to predict urban growth in Kathmandu Valley through 2030, helping planners, policy makers, and citizens prepare for change and make informed decisions about infrastructure, green spaces, and sustainable development.
+              </div>
+            </div>
+
+            {/* How it Works */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>🤖 HOW IT WORKS</div>
+              <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.7,marginBottom:10}}>
+                A <strong>ConvLSTM neural network</strong> (Convolutional Long Short-Term Memory) trained on 23 years of satellite imagery learns patterns of urban expansion and projects them forward to 2030.
+              </div>
+              <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.6,paddingLeft:16,borderLeft:"2px solid rgba(76,201,240,.3)"}}>
+                ✓ 87% accurate at detecting new urbanization<br/>
+                ✓ Trained on over 1 million data points<br/>
+                ✓ Conservative, realistic growth scenarios<br/>
+                ✓ Monotonic constraint: once built, stays built
+              </div>
+            </div>
+
+            {/* Data Sources */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>📊 DATA SOURCES</div>
+              <div style={{fontSize:12,color:"var(--text2)",lineHeight:1.7}}>
+                • <strong>Satellite Data:</strong> Landsat Collection 2 (2000-2022)<br/>
+                • <strong>Processing Platform:</strong> Google Earth Engine<br/>
+                • <strong>Spatial Resolution:</strong> 30 meters per pixel<br/>
+                • <strong>Study Area:</strong> 1,039 km² (Kathmandu Valley)<br/>
+                • <strong>Land Cover Classes:</strong> Built-up, Vegetation, Cropland, Water
+              </div>
+            </div>
+
+            {/* Technical Details */}
+            <div style={{marginBottom:20}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>⚙️ TECHNICAL DETAILS</div>
+              <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.7,fontFamily:"var(--mono)",background:"var(--bg)",padding:12,borderRadius:6,border:"1px solid var(--border)"}}>
+                Model: ConvLSTM<br/>
+                Framework: PyTorch 2.x<br/>
+                Hardware: NVIDIA RTX 4060 Ti (16GB)<br/>
+                Primary Metric: New Built-up Recall (87.3%)<br/>
+                Loss Function: Focal Loss + Transition Weighting
+              </div>
+            </div>
+
+            {/* Links */}
+            <div style={{marginBottom:16,paddingTop:16,borderTop:"1px solid var(--border)"}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:10,fontFamily:"var(--mono)"}}>🔗 RESOURCES</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                <a href="https://github.com/Himal-Joshi/urban-growth-lulc-kathmandu-ml" target="_blank" rel="noopener noreferrer" style={{fontSize:12,color:"var(--cyan)",textDecoration:"none",display:"flex",alignItems:"center",gap:6}}>
+                  → Source Code (GitHub)
+                </a>
+                <a href="mailto:your@email.com" style={{fontSize:12,color:"var(--cyan)",textDecoration:"none",display:"flex",alignItems:"center",gap:6}}>
+                  → Contact: your@email.com
+                </a>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{fontSize:11,color:"var(--text3)",paddingTop:16,borderTop:"1px solid var(--border)",textAlign:"center"}}>
+              Built with Claude Code · Last updated: March 2026
+            </div>
+          </div>
+        </div>
+      )}
+
       <footer className="footer">
-        <span className="fi-t">DATA: LANDSAT · GOOGLE EARTH ENGINE</span>
+        <div style={{display:"flex",flexDirection:"column",gap:4}}>
+          <span className="fi-t">DATA: LANDSAT COLLECTION 2 (2000-2022) · GOOGLE EARTH ENGINE</span>
+          <span className="fi-t" style={{fontSize:9,color:"var(--text3)"}}>MODEL: ConvLSTM Neural Network · PyTorch · 87% New Built-up Recall</span>
+        </div>
         <div style={{display:"flex",alignItems:"center",gap:6}}><div className="fdot"/><span className="fi-t">{isMobile?"PINCH TO ZOOM":"SCROLL TO ZOOM · DRAG TO PAN"}</span></div>
         <span className="fi-t">~30M/PX · 1039 KM²</span>
       </footer>
