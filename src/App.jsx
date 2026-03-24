@@ -711,10 +711,10 @@ export default function App() {
                     This is a <strong style={{color:"#4cc9f0"}}>model prediction</strong> based on historical growth patterns (2000-2022).
                   </div>
                   <div style={{fontSize:10,color:"var(--text3)",lineHeight:1.7,marginBottom:8,paddingLeft:12,borderLeft:"2px solid rgba(76,201,240,.3)"}}>
-                    ✓ ConvLSTM neural network<br/>
-                    ✓ 87% accuracy on test data<br/>
-                    ✓ Monotonic constraint applied<br/>
-                    ✓ Conservative estimate
+                    ✓ FlexConvLSTM neural network<br/>
+                    ✓ 67% accuracy on new builtup<br/>
+                    ✓ 28% Figure of Merit (FoM)<br/>
+                    ✓ Monotonic constraint applied
                   </div>
                   <div style={{fontSize:10,color:"#fb8500",marginTop:10,paddingTop:10,borderTop:"1px solid rgba(76,201,240,.1)"}}>
                     <strong>Growth from 2022:</strong> +{(currentData.builtup.area_km2 - stats.data[2022].builtup.area_km2).toFixed(1)} km²
@@ -890,12 +890,12 @@ export default function App() {
             <div style={{marginBottom:20}}>
               <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>🤖 HOW IT WORKS</div>
               <div style={{fontSize:13,color:"var(--text2)",lineHeight:1.7,marginBottom:10}}>
-                A <strong>ConvLSTM neural network</strong> (Convolutional Long Short-Term Memory) trained on 23 years of satellite imagery learns patterns of urban expansion and projects them forward to 2030.
+                A <strong>FlexConvLSTM neural network</strong> (Flexible Convolutional Long Short-Term Memory) trained on 23 years of satellite imagery learns patterns of urban expansion and projects them forward to 2030.
               </div>
               <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.6,paddingLeft:16,borderLeft:"2px solid rgba(76,201,240,.3)"}}>
-                ✓ 87% accurate at detecting new urbanization<br/>
-                ✓ Trained on over 1 million data points<br/>
-                ✓ Conservative, realistic growth scenarios<br/>
+                ✓ 67% new builtup recall (test accuracy)<br/>
+                ✓ 28% Figure of Merit (exceeds benchmark)<br/>
+                ✓ 3× fewer false alarms than previous version<br/>
                 ✓ Monotonic constraint: once built, stays built
               </div>
             </div>
@@ -916,11 +916,14 @@ export default function App() {
             <div style={{marginBottom:20}}>
               <div style={{fontSize:13,fontWeight:600,color:"#4cc9f0",marginBottom:8,fontFamily:"var(--mono)"}}>⚙️ TECHNICAL DETAILS</div>
               <div style={{fontSize:12,color:"var(--text3)",lineHeight:1.7,fontFamily:"var(--mono)",background:"var(--bg)",padding:12,borderRadius:6,border:"1px solid var(--border)"}}>
-                Model: ConvLSTM<br/>
+                Model: FlexConvLSTM (V3)<br/>
                 Framework: PyTorch 2.x<br/>
                 Hardware: NVIDIA RTX 4060 Ti (16GB)<br/>
-                Primary Metric: New Built-up Recall (87.3%)<br/>
-                Loss Function: Focal Loss + Transition Weighting
+                Architecture: 3 layers [64, 128, 64]<br/>
+                Parameters: 1.52M<br/>
+                Primary Metric: New Built-up Recall (67.02%)<br/>
+                Figure of Merit: 28.11%<br/>
+                Loss Function: Focal Loss + Change-Aware (4×)
               </div>
             </div>
 
