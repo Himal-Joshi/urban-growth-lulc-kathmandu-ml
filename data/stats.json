@@ -12,6 +12,7 @@
     2009,
     2010,
     2011,
+    2012,
     2013,
     2014,
     2015,
@@ -21,558 +22,791 @@
     2019,
     2020,
     2021,
-    2022
+    2022,
+    2023,
+    2024,
+    2025,
+    2026,
+    2027,
+    2028,
+    2029,
+    2030
   ],
   "data": {
     "2000": {
       "year": 2000,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 591,
-        "area_km2": 0.53,
-        "pct": 0.05
+        "pixels": 51,
+        "area_km2": 0.05,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 526634,
-        "area_km2": 473.97,
-        "pct": 45.62
+        "pixels": 520845,
+        "area_km2": 468.76,
+        "pct": 45.12
       },
       "cropland": {
-        "pixels": 523286,
-        "area_km2": 470.96,
-        "pct": 45.33
+        "pixels": 532836,
+        "area_km2": 479.55,
+        "pct": 46.15
       },
       "builtup": {
-        "pixels": 103956,
-        "area_km2": 93.56,
-        "pct": 9.0
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 100735,
+        "area_km2": 90.6615,
+        "pct": 8.73
+      }
     },
     "2001": {
       "year": 2001,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 744,
-        "area_km2": 0.67,
-        "pct": 0.06
+        "pixels": 72,
+        "area_km2": 0.06,
+        "pct": 0.01
       },
       "vegetation": {
-        "pixels": 533946,
-        "area_km2": 480.55,
-        "pct": 46.25
+        "pixels": 528240,
+        "area_km2": 475.42,
+        "pct": 45.76
       },
       "cropland": {
-        "pixels": 525006,
-        "area_km2": 472.51,
-        "pct": 45.48
+        "pixels": 535683,
+        "area_km2": 482.11,
+        "pct": 46.4
       },
       "builtup": {
-        "pixels": 94771,
-        "area_km2": 85.29,
-        "pct": 8.21
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 90472,
+        "area_km2": 90.9234,
+        "pct": 8.75
+      }
     },
     "2002": {
       "year": 2002,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 890,
-        "area_km2": 0.8,
-        "pct": 0.08
+        "pixels": 131,
+        "area_km2": 0.12,
+        "pct": 0.01
       },
       "vegetation": {
-        "pixels": 544308,
-        "area_km2": 489.88,
-        "pct": 47.15
+        "pixels": 539426,
+        "area_km2": 485.48,
+        "pct": 46.73
       },
       "cropland": {
-        "pixels": 518127,
-        "area_km2": 466.31,
-        "pct": 44.88
+        "pixels": 528940,
+        "area_km2": 476.05,
+        "pct": 45.82
       },
       "builtup": {
-        "pixels": 91142,
-        "area_km2": 82.03,
-        "pct": 7.89
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 85970,
+        "area_km2": 91.2006,
+        "pct": 8.78
+      }
     },
     "2003": {
       "year": 2003,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 972,
-        "area_km2": 0.87,
-        "pct": 0.08
+        "pixels": 226,
+        "area_km2": 0.2,
+        "pct": 0.02
       },
       "vegetation": {
-        "pixels": 561115,
-        "area_km2": 505.0,
-        "pct": 48.6
+        "pixels": 556633,
+        "area_km2": 500.97,
+        "pct": 48.22
       },
       "cropland": {
-        "pixels": 498405,
-        "area_km2": 448.56,
-        "pct": 43.17
+        "pixels": 509102,
+        "area_km2": 458.19,
+        "pct": 44.1
       },
       "builtup": {
-        "pixels": 93975,
-        "area_km2": 84.58,
-        "pct": 8.14
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 88506,
+        "area_km2": 91.8801,
+        "pct": 8.84
+      }
     },
     "2004": {
       "year": 2004,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 982,
-        "area_km2": 0.88,
-        "pct": 0.09
-      },
-      "vegetation": {
-        "pixels": 578782,
-        "area_km2": 520.9,
-        "pct": 50.13
-      },
-      "cropland": {
-        "pixels": 475396,
-        "area_km2": 427.86,
-        "pct": 41.18
-      },
-      "builtup": {
-        "pixels": 99307,
-        "area_km2": 89.38,
-        "pct": 8.6
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2005": {
-      "year": 2005,
-      "observed": true,
-      "water": {
-        "pixels": 1013,
-        "area_km2": 0.91,
-        "pct": 0.09
-      },
-      "vegetation": {
-        "pixels": 590334,
-        "area_km2": 531.3,
-        "pct": 51.13
-      },
-      "cropland": {
-        "pixels": 459666,
-        "area_km2": 413.7,
-        "pct": 39.82
-      },
-      "builtup": {
-        "pixels": 103454,
-        "area_km2": 93.11,
-        "pct": 8.96
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2006": {
-      "year": 2006,
-      "observed": true,
-      "water": {
-        "pixels": 960,
-        "area_km2": 0.86,
-        "pct": 0.08
-      },
-      "vegetation": {
-        "pixels": 593323,
-        "area_km2": 533.99,
-        "pct": 51.39
-      },
-      "cropland": {
-        "pixels": 454096,
-        "area_km2": 408.69,
-        "pct": 39.33
-      },
-      "builtup": {
-        "pixels": 106088,
-        "area_km2": 95.48,
-        "pct": 9.19
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2007": {
-      "year": 2007,
-      "observed": true,
-      "water": {
-        "pixels": 852,
-        "area_km2": 0.77,
-        "pct": 0.07
-      },
-      "vegetation": {
-        "pixels": 588067,
-        "area_km2": 529.26,
-        "pct": 50.94
-      },
-      "cropland": {
-        "pixels": 456716,
-        "area_km2": 411.04,
-        "pct": 39.56
-      },
-      "builtup": {
-        "pixels": 108832,
-        "area_km2": 97.95,
-        "pct": 9.43
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2008": {
-      "year": 2008,
-      "observed": true,
-      "water": {
-        "pixels": 711,
-        "area_km2": 0.64,
-        "pct": 0.06
-      },
-      "vegetation": {
-        "pixels": 583399,
-        "area_km2": 525.06,
-        "pct": 50.53
-      },
-      "cropland": {
-        "pixels": 457738,
-        "area_km2": 411.96,
-        "pct": 39.65
-      },
-      "builtup": {
-        "pixels": 112619,
-        "area_km2": 101.36,
-        "pct": 9.76
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2009": {
-      "year": 2009,
-      "observed": true,
-      "water": {
-        "pixels": 567,
-        "area_km2": 0.51,
-        "pct": 0.05
-      },
-      "vegetation": {
-        "pixels": 575457,
-        "area_km2": 517.91,
-        "pct": 49.85
-      },
-      "cropland": {
-        "pixels": 461015,
-        "area_km2": 414.91,
-        "pct": 39.93
-      },
-      "builtup": {
-        "pixels": 117428,
-        "area_km2": 105.69,
-        "pct": 10.17
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2010": {
-      "year": 2010,
-      "observed": true,
-      "water": {
-        "pixels": 479,
-        "area_km2": 0.43,
-        "pct": 0.04
-      },
-      "vegetation": {
-        "pixels": 572950,
-        "area_km2": 515.65,
-        "pct": 49.63
-      },
-      "cropland": {
-        "pixels": 459010,
-        "area_km2": 413.11,
-        "pct": 39.76
-      },
-      "builtup": {
-        "pixels": 122028,
-        "area_km2": 109.83,
-        "pct": 10.57
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2011": {
-      "year": 2011,
-      "observed": true,
-      "water": {
-        "pixels": 352,
-        "area_km2": 0.32,
-        "pct": 0.03
-      },
-      "vegetation": {
-        "pixels": 569727,
-        "area_km2": 512.75,
-        "pct": 49.35
-      },
-      "cropland": {
-        "pixels": 458910,
-        "area_km2": 413.02,
-        "pct": 39.75
-      },
-      "builtup": {
-        "pixels": 125478,
-        "area_km2": 112.93,
-        "pct": 10.87
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2013": {
-      "year": 2013,
-      "observed": true,
-      "water": {
-        "pixels": 262,
-        "area_km2": 0.24,
-        "pct": 0.02
-      },
-      "vegetation": {
-        "pixels": 560748,
-        "area_km2": 504.67,
-        "pct": 48.57
-      },
-      "cropland": {
-        "pixels": 465141,
-        "area_km2": 418.63,
-        "pct": 40.29
-      },
-      "builtup": {
-        "pixels": 128316,
-        "area_km2": 115.48,
-        "pct": 11.11
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2014": {
-      "year": 2014,
-      "observed": true,
-      "water": {
-        "pixels": 240,
-        "area_km2": 0.22,
-        "pct": 0.02
-      },
-      "vegetation": {
-        "pixels": 559811,
-        "area_km2": 503.83,
-        "pct": 48.49
-      },
-      "cropland": {
-        "pixels": 463263,
-        "area_km2": 416.94,
-        "pct": 40.13
-      },
-      "builtup": {
-        "pixels": 131153,
-        "area_km2": 118.04,
-        "pct": 11.36
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2015": {
-      "year": 2015,
-      "observed": true,
-      "water": {
-        "pixels": 254,
-        "area_km2": 0.23,
-        "pct": 0.02
-      },
-      "vegetation": {
-        "pixels": 560396,
-        "area_km2": 504.36,
-        "pct": 48.54
-      },
-      "cropland": {
-        "pixels": 458451,
-        "area_km2": 412.61,
-        "pct": 39.71
-      },
-      "builtup": {
-        "pixels": 135366,
-        "area_km2": 121.83,
-        "pct": 11.73
-      },
-      "total_valid_km2": 1039.02
-    },
-    "2016": {
-      "year": 2016,
-      "observed": true,
-      "water": {
-        "pixels": 232,
+        "pixels": 238,
         "area_km2": 0.21,
         "pct": 0.02
       },
       "vegetation": {
-        "pixels": 559196,
-        "area_km2": 503.28,
-        "pct": 48.44
+        "pixels": 574964,
+        "area_km2": 517.47,
+        "pct": 49.8
       },
       "cropland": {
-        "pixels": 451985,
-        "area_km2": 406.79,
-        "pct": 39.15
+        "pixels": 485513,
+        "area_km2": 436.96,
+        "pct": 42.06
       },
       "builtup": {
-        "pixels": 143054,
-        "area_km2": 128.75,
-        "pct": 12.39
+        "pixels": 93752,
+        "area_km2": 93.5181,
+        "pct": 9.0
+      }
+    },
+    "2005": {
+      "year": 2005,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 231,
+        "area_km2": 0.21,
+        "pct": 0.02
       },
-      "total_valid_km2": 1039.02
+      "vegetation": {
+        "pixels": 588175,
+        "area_km2": 529.36,
+        "pct": 50.95
+      },
+      "cropland": {
+        "pixels": 468475,
+        "area_km2": 421.63,
+        "pct": 40.58
+      },
+      "builtup": {
+        "pixels": 97586,
+        "area_km2": 95.3883,
+        "pct": 9.18
+      }
+    },
+    "2006": {
+      "year": 2006,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 170,
+        "area_km2": 0.15,
+        "pct": 0.01
+      },
+      "vegetation": {
+        "pixels": 592064,
+        "area_km2": 532.86,
+        "pct": 51.28
+      },
+      "cropland": {
+        "pixels": 462128,
+        "area_km2": 415.92,
+        "pct": 40.03
+      },
+      "builtup": {
+        "pixels": 100105,
+        "area_km2": 96.8526,
+        "pct": 9.32
+      }
+    },
+    "2007": {
+      "year": 2007,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 140,
+        "area_km2": 0.13,
+        "pct": 0.01
+      },
+      "vegetation": {
+        "pixels": 587103,
+        "area_km2": 528.39,
+        "pct": 50.85
+      },
+      "cropland": {
+        "pixels": 464720,
+        "area_km2": 418.25,
+        "pct": 40.25
+      },
+      "builtup": {
+        "pixels": 102504,
+        "area_km2": 98.1576,
+        "pct": 9.45
+      }
+    },
+    "2008": {
+      "year": 2008,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 102,
+        "area_km2": 0.09,
+        "pct": 0.01
+      },
+      "vegetation": {
+        "pixels": 582585,
+        "area_km2": 524.33,
+        "pct": 50.46
+      },
+      "cropland": {
+        "pixels": 465940,
+        "area_km2": 419.35,
+        "pct": 40.36
+      },
+      "builtup": {
+        "pixels": 105840,
+        "area_km2": 99.8829,
+        "pct": 9.61
+      }
+    },
+    "2009": {
+      "year": 2009,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 67,
+        "area_km2": 0.06,
+        "pct": 0.01
+      },
+      "vegetation": {
+        "pixels": 574610,
+        "area_km2": 517.15,
+        "pct": 49.77
+      },
+      "cropland": {
+        "pixels": 469490,
+        "area_km2": 422.54,
+        "pct": 40.67
+      },
+      "builtup": {
+        "pixels": 110300,
+        "area_km2": 102.5568,
+        "pct": 9.87
+      }
+    },
+    "2010": {
+      "year": 2010,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 34,
+        "area_km2": 0.03,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 572196,
+        "area_km2": 514.98,
+        "pct": 49.56
+      },
+      "cropland": {
+        "pixels": 467596,
+        "area_km2": 420.84,
+        "pct": 40.5
+      },
+      "builtup": {
+        "pixels": 114641,
+        "area_km2": 105.4818,
+        "pct": 10.15
+      }
+    },
+    "2011": {
+      "year": 2011,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 19,
+        "area_km2": 0.02,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 569448,
+        "area_km2": 512.5,
+        "pct": 49.33
+      },
+      "cropland": {
+        "pixels": 467350,
+        "area_km2": 420.62,
+        "pct": 40.48
+      },
+      "builtup": {
+        "pixels": 117650,
+        "area_km2": 107.6562,
+        "pct": 10.36
+      }
+    },
+    "2012": {
+      "year": 2012,
+      "observed": true,
+      "total_valid_km2": 1903.18,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 547414,
+        "area_km2": 492.67,
+        "pct": 25.89
+      },
+      "cropland": {
+        "pixels": 454230,
+        "area_km2": 408.81,
+        "pct": 21.48
+      },
+      "builtup": {
+        "pixels": 150697,
+        "area_km2": 139.8996,
+        "pct": 7.35
+      }
+    },
+    "2013": {
+      "year": 2013,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 16,
+        "area_km2": 0.01,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 560667,
+        "area_km2": 504.6,
+        "pct": 48.57
+      },
+      "cropland": {
+        "pixels": 473471,
+        "area_km2": 426.12,
+        "pct": 41.01
+      },
+      "builtup": {
+        "pixels": 120313,
+        "area_km2": 140.4522,
+        "pct": 13.52
+      }
+    },
+    "2014": {
+      "year": 2014,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 15,
+        "area_km2": 0.01,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 560086,
+        "area_km2": 504.08,
+        "pct": 48.51
+      },
+      "cropland": {
+        "pixels": 471316,
+        "area_km2": 424.18,
+        "pct": 40.83
+      },
+      "builtup": {
+        "pixels": 123050,
+        "area_km2": 141.1173,
+        "pct": 13.58
+      }
+    },
+    "2015": {
+      "year": 2015,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 16,
+        "area_km2": 0.01,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 561208,
+        "area_km2": 505.09,
+        "pct": 48.61
+      },
+      "cropland": {
+        "pixels": 466465,
+        "area_km2": 419.82,
+        "pct": 40.41
+      },
+      "builtup": {
+        "pixels": 126778,
+        "area_km2": 142.3359,
+        "pct": 13.7
+      }
+    },
+    "2016": {
+      "year": 2016,
+      "observed": true,
+      "total_valid_km2": 1039.02,
+      "water": {
+        "pixels": 14,
+        "area_km2": 0.01,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 560627,
+        "area_km2": 504.56,
+        "pct": 48.56
+      },
+      "cropland": {
+        "pixels": 460265,
+        "area_km2": 414.24,
+        "pct": 39.87
+      },
+      "builtup": {
+        "pixels": 133561,
+        "area_km2": 145.0485,
+        "pct": 13.96
+      }
     },
     "2017": {
       "year": 2017,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 241,
-        "area_km2": 0.22,
-        "pct": 0.02
+        "pixels": 17,
+        "area_km2": 0.02,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 559690,
-        "area_km2": 503.72,
-        "pct": 48.48
+        "pixels": 562114,
+        "area_km2": 505.9,
+        "pct": 48.69
       },
       "cropland": {
-        "pixels": 437834,
-        "area_km2": 394.05,
-        "pct": 37.93
+        "pixels": 447691,
+        "area_km2": 402.92,
+        "pct": 38.78
       },
       "builtup": {
-        "pixels": 156702,
-        "area_km2": 141.03,
-        "pct": 13.57
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 144645,
+        "area_km2": 150.4863,
+        "pct": 14.48
+      }
     },
     "2018": {
       "year": 2018,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 349,
-        "area_km2": 0.31,
-        "pct": 0.03
+        "pixels": 26,
+        "area_km2": 0.02,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 558869,
-        "area_km2": 502.98,
-        "pct": 48.41
+        "pixels": 563727,
+        "area_km2": 507.35,
+        "pct": 48.83
       },
       "cropland": {
-        "pixels": 409572,
-        "area_km2": 368.61,
-        "pct": 35.48
+        "pixels": 423270,
+        "area_km2": 380.94,
+        "pct": 36.66
       },
       "builtup": {
-        "pixels": 185677,
-        "area_km2": 167.11,
-        "pct": 16.08
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 167444,
+        "area_km2": 170.316,
+        "pct": 16.39
+      }
     },
     "2019": {
       "year": 2019,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 604,
-        "area_km2": 0.54,
-        "pct": 0.05
+        "pixels": 41,
+        "area_km2": 0.04,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 561700,
-        "area_km2": 505.53,
-        "pct": 48.65
+        "pixels": 566862,
+        "area_km2": 510.18,
+        "pct": 49.1
       },
       "cropland": {
-        "pixels": 398713,
-        "area_km2": 358.84,
-        "pct": 34.54
+        "pixels": 412044,
+        "area_km2": 370.84,
+        "pct": 35.69
       },
       "builtup": {
-        "pixels": 193450,
-        "area_km2": 174.1,
-        "pct": 16.76
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 175520,
+        "area_km2": 172.26,
+        "pct": 16.58
+      }
     },
     "2020": {
       "year": 2020,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 374,
-        "area_km2": 0.34,
-        "pct": 0.03
+        "pixels": 34,
+        "area_km2": 0.03,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 548884,
-        "area_km2": 494.0,
-        "pct": 47.54
+        "pixels": 553062,
+        "area_km2": 497.76,
+        "pct": 47.91
       },
       "cropland": {
-        "pixels": 403784,
-        "area_km2": 363.41,
-        "pct": 34.98
+        "pixels": 414685,
+        "area_km2": 373.22,
+        "pct": 35.92
       },
       "builtup": {
-        "pixels": 201425,
-        "area_km2": 181.28,
-        "pct": 17.45
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 186686,
+        "area_km2": 185.1561,
+        "pct": 17.82
+      }
     },
     "2021": {
       "year": 2021,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 201,
-        "area_km2": 0.18,
-        "pct": 0.02
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
       },
       "vegetation": {
-        "pixels": 547546,
-        "area_km2": 492.79,
-        "pct": 47.43
+        "pixels": 551258,
+        "area_km2": 496.13,
+        "pct": 47.75
       },
       "cropland": {
-        "pixels": 403958,
-        "area_km2": 363.56,
-        "pct": 34.99
+        "pixels": 417539,
+        "area_km2": 375.79,
+        "pct": 36.17
       },
       "builtup": {
-        "pixels": 202762,
-        "area_km2": 182.49,
-        "pct": 17.56
-      },
-      "total_valid_km2": 1039.02
+        "pixels": 185670,
+        "area_km2": 190.3752,
+        "pct": 18.32
+      }
     },
     "2022": {
       "year": 2022,
       "observed": true,
+      "total_valid_km2": 1039.02,
       "water": {
-        "pixels": 4334,
-        "area_km2": 3.9,
-        "pct": 0.38
+        "pixels": 1052,
+        "area_km2": 0.95,
+        "pct": 0.09
       },
       "vegetation": {
-        "pixels": 544010,
-        "area_km2": 489.61,
-        "pct": 47.12
+        "pixels": 548104,
+        "area_km2": 493.29,
+        "pct": 47.48
       },
       "cropland": {
-        "pixels": 401046,
-        "area_km2": 360.94,
-        "pct": 34.74
+        "pixels": 414358,
+        "area_km2": 372.92,
+        "pct": 35.89
       },
       "builtup": {
-        "pixels": 205077,
-        "area_km2": 184.57,
-        "pct": 17.76
+        "pixels": 190953,
+        "area_km2": 193.9959,
+        "pct": 18.67
+      }
+    },
+    "2023": {
+      "year": 2023,
+      "observed": true,
+      "total_valid_km2": 1909.9,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
       },
-      "total_valid_km2": 1039.02
+      "vegetation": {
+        "pixels": 523989,
+        "area_km2": 471.59,
+        "pct": 24.69
+      },
+      "cropland": {
+        "pixels": 405583,
+        "area_km2": 365.02,
+        "pct": 19.11
+      },
+      "builtup": {
+        "pixels": 220612,
+        "area_km2": 223.0434,
+        "pct": 11.68
+      }
+    },
+    "2024": {
+      "year": 2024,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 516588,
+        "area_km2": 464.93,
+        "pct": 44.89
+      },
+      "cropland": {
+        "pixels": 342250,
+        "area_km2": 308.02,
+        "pct": 29.74
+      },
+      "builtup": {
+        "pixels": 291919,
+        "area_km2": 264.2643,
+        "pct": 25.52
+      }
+    },
+    "2025": {
+      "year": 2025,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 513009,
+        "area_km2": 461.71,
+        "pct": 44.58
+      },
+      "cropland": {
+        "pixels": 313230,
+        "area_km2": 281.91,
+        "pct": 27.22
+      },
+      "builtup": {
+        "pixels": 324518,
+        "area_km2": 292.2723,
+        "pct": 28.22
+      }
+    },
+    "2026": {
+      "year": 2026,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 512578,
+        "area_km2": 461.32,
+        "pct": 44.54
+      },
+      "cropland": {
+        "pixels": 289641,
+        "area_km2": 260.68,
+        "pct": 25.17
+      },
+      "builtup": {
+        "pixels": 348538,
+        "area_km2": 313.5087,
+        "pct": 30.27
+      }
+    },
+    "2027": {
+      "year": 2027,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 511944,
+        "area_km2": 460.75,
+        "pct": 44.49
+      },
+      "cropland": {
+        "pixels": 271741,
+        "area_km2": 244.57,
+        "pct": 23.61
+      },
+      "builtup": {
+        "pixels": 367072,
+        "area_km2": 329.9292,
+        "pct": 31.86
+      }
+    },
+    "2028": {
+      "year": 2028,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 511411,
+        "area_km2": 460.27,
+        "pct": 44.44
+      },
+      "cropland": {
+        "pixels": 257744,
+        "area_km2": 231.97,
+        "pct": 22.4
+      },
+      "builtup": {
+        "pixels": 381602,
+        "area_km2": 342.8649,
+        "pct": 33.11
+      }
+    },
+    "2029": {
+      "year": 2029,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 510843,
+        "area_km2": 459.76,
+        "pct": 44.39
+      },
+      "cropland": {
+        "pixels": 246553,
+        "area_km2": 221.9,
+        "pct": 21.43
+      },
+      "builtup": {
+        "pixels": 393361,
+        "area_km2": 353.4525,
+        "pct": 34.13
+      }
+    },
+    "2030": {
+      "year": 2030,
+      "observed": false,
+      "total_valid_km2": 1035.68,
+      "water": {
+        "pixels": 0,
+        "area_km2": 0.0,
+        "pct": 0.0
+      },
+      "vegetation": {
+        "pixels": 510316,
+        "area_km2": 459.28,
+        "pct": 44.35
+      },
+      "cropland": {
+        "pixels": 237922,
+        "area_km2": 214.13,
+        "pct": 20.68
+      },
+      "builtup": {
+        "pixels": 402519,
+        "area_km2": 361.7514,
+        "pct": 34.93
+      }
     }
   }
 }
