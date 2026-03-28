@@ -62,26 +62,6 @@ function MapSyncController({ mapRef, otherMapRef, syncRef }) {
   return null;
 }
 
-// ── SwipeOverlayDirect (creates overlay, exposes ref for zero-lag clipping) ───
-function SwipeOverlayDirect({ url, bounds, opacity, overlayElRef, initialPct }) {
-  const map = useMap();
-  const overlayRef = useRef(null);
-
-  useEffect(() => {
-    if (overlayRef.current) map.removeLayer(overlayRef.current);
-    const overlay = L.imageOverlay(url, bounds, { opacity });
-    overlay.addTo(map);
-    overlayRef.current = overlay;
-    const el = overlay.getElement();
-    if (el) {
-      el.style.clipPath = `inset(0 0 0 ${initialPct}%)`;
-      if (overlayElRef) overlayElRef.current = el;
-    }
-    return () => { if (overlayRef.current) { map.removeLayer(overlayRef.current); overlayRef.current = null; if (overlayElRef) overlayElRef.current = null; } };
-  }, [map, url, bounds, opacity, overlayElRef, initialPct]);
-
-  return null;
-}
 
 // ── MapExtras (minZoom + relocate button + search bar) ────────────────────────
 function MapExtras({ showSearch = false }) {
@@ -245,13 +225,16 @@ function MapExtras({ showSearch = false }) {
   );
 }
 
-// ── SwipeCompareMap (zero-lag: refs + direct DOM updates) ─────────────────────
+// ── SwipeCompareMap (two stacked maps, clip the top wrapper) ──────────────────
 function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB }) {
   const [hinted, setHinted] = useState(false);
   const wrapRef = useRef(null);
   const dividerRef = useRef(null);
   const handleRef = useRef(null);
-  const overlayElRef = useRef(null);
+  const clipWrapRef = useRef(null);
+  const mapARef = useRef(null);
+  const mapBRef = useRef(null);
+  const syncLockRef = useRef(false);
   const swipeDragging = useRef(false);
 
   const startSwipe = useCallback((e) => {
@@ -263,10 +246,9 @@ function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB 
       const src = ev.touches ? ev.touches[0] : ev;
       const rect = wrapRef.current.getBoundingClientRect();
       const pct = Math.max(1, Math.min(99, ((src.clientX - rect.left) / rect.width) * 100));
-      // Direct DOM updates — no React re-render, zero lag
       if (dividerRef.current) dividerRef.current.style.left = `${pct}%`;
       if (handleRef.current) handleRef.current.style.left = `${pct}%`;
-      if (overlayElRef.current) overlayElRef.current.style.clipPath = `inset(0 0 0 ${pct}%)`;
+      if (clipWrapRef.current) clipWrapRef.current.style.clipPath = `inset(0 0 0 ${pct}%)`;
     };
     const end = () => { swipeDragging.current = false; window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", end); window.removeEventListener("touchmove", move); window.removeEventListener("touchend", end); };
     window.addEventListener("pointermove", move);
@@ -277,13 +259,22 @@ function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB 
 
   return (
     <div ref={wrapRef} style={{ flex: 1, position: "relative", background: "#020810", borderRadius: "var(--radius)", border: "1px solid var(--border)", overflow: "hidden", minHeight: 0, userSelect: "none", touchAction: "none" }}>
-      <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
+      {/* Bottom: Year A (interactive, always fully visible) */}
+      <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%", position: "absolute", inset: 0, zIndex: 1 }}>
         <ZoomControl position="bottomright" />
         <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
         <ImageOverlay url={urlA} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
-        <SwipeOverlayDirect url={urlB} bounds={KATHMANDU_BOUNDS} opacity={0.82} overlayElRef={overlayElRef} initialPct={50} />
+        <MapSyncController mapRef={mapARef} otherMapRef={mapBRef} syncRef={syncLockRef} />
         <MapExtras showSearch />
       </MapContainer>
+      {/* Top: Year B (non-interactive, clipped to show only right side) */}
+      <div ref={clipWrapRef} style={{ position: "absolute", inset: 0, zIndex: 2, clipPath: "inset(0 0 0 50%)", pointerEvents: "none" }}>
+        <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom={false} dragging={false} keyboard={false} touchZoom={false} doubleClickZoom={false} style={{ height: "100%", width: "100%" }}>
+          <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
+          <ImageOverlay url={urlB} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
+          <MapSyncController mapRef={mapBRef} otherMapRef={mapARef} syncRef={syncLockRef} />
+        </MapContainer>
+      </div>
       {/* Divider line */}
       <div ref={dividerRef} style={{ position: "absolute", top: 0, bottom: 0, left: "50%", width: 2, background: "rgba(255,255,255,0.85)", zIndex: 20, pointerEvents: "none", transform: "translateX(-1px)" }} />
       {/* Handle */}
@@ -296,6 +287,7 @@ function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB 
     </div>
   );
 }
+
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -738,6 +730,7 @@ export default function App() {
         .mb:hover:not(.on){background:var(--bg3);color:var(--text2);}
         .split-wrap{flex:1;display:flex;gap:6px;min-height:0;}
         .split-half{flex:1;position:relative;background:#020810;border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;min-height:0;}
+        @media(max-width:900px){.split-half{min-height:250px;}}
         .split-lbl{position:absolute;top:10px;left:10px;font-size:clamp(14px,4vw,20px);font-weight:700;font-family:var(--mono);color:#fff;text-shadow:0 2px 10px #000;pointer-events:none;z-index:10;}
         .op-wrap{flex:1;display:flex;flex-direction:column;gap:7px;min-height:0;}
         .op-ctrl{flex-shrink:0;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 14px;}
@@ -1058,7 +1051,7 @@ export default function App() {
               </div>
               {compareMode === "swipe" && yearA && yearB && <SwipeCompareMap urlA={`${BASE}/tiles/${yearA}_tile.png`} urlB={`${BASE}/tiles/${yearB}_tile.png`} yearA={yearA} yearB={yearB} isPredictedA={isPredictedA} isPredictedB={isPredictedB} />}
               {compareMode === "split" && (
-                <div className="split-wrap">
+                <div className="split-wrap" style={isMobile ? { flexDirection: 'column' } : undefined}>
                   {showChange && isConsecutive ? (
                     <div className="mapbox" style={{ flex: 1, position: "relative" }}>
                       <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
