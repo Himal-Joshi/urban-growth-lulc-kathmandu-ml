@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine, CartesianGrid } from "recharts";
-import { Play, Pause, Layers, Eye, EyeOff, AlertCircle, BarChart2, ChevronUp, X, Download } from "lucide-react";
-import { MapContainer, TileLayer, ImageOverlay, useMap, Pane, ZoomControl } from "react-leaflet";
+import { Play, Pause, Layers, Eye, EyeOff, AlertCircle, BarChart2, ChevronUp, X, Download, Search, MapPin, Navigation2 } from "lucide-react";
+import { MapContainer, TileLayer, ImageOverlay, useMap, ZoomControl } from "react-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 const BASE = "/urban-growth-lulc-kathmandu-ml/data";
@@ -60,21 +62,196 @@ function MapSyncController({ mapRef, otherMapRef, syncRef }) {
   return null;
 }
 
-// ── SwipeClipController (applies clip-path to the swipe pane) ─────────────────
-function SwipeClipController({ swipePct }) {
+// ── SwipeOverlayDirect (creates overlay, exposes ref for zero-lag clipping) ───
+function SwipeOverlayDirect({ url, bounds, opacity, overlayElRef, initialPct }) {
   const map = useMap();
+  const overlayRef = useRef(null);
+
   useEffect(() => {
-    const pane = map.getPane("swipePane");
-    if (pane) pane.style.clipPath = `inset(0 0 0 ${swipePct}%)`;
-  }, [map, swipePct]);
+    if (overlayRef.current) map.removeLayer(overlayRef.current);
+    const overlay = L.imageOverlay(url, bounds, { opacity });
+    overlay.addTo(map);
+    overlayRef.current = overlay;
+    const el = overlay.getElement();
+    if (el) {
+      el.style.clipPath = `inset(0 0 0 ${initialPct}%)`;
+      if (overlayElRef) overlayElRef.current = el;
+    }
+    return () => { if (overlayRef.current) { map.removeLayer(overlayRef.current); overlayRef.current = null; if (overlayElRef) overlayElRef.current = null; } };
+  }, [map, url, bounds, opacity, overlayElRef, initialPct]);
+
   return null;
 }
 
-// ── SwipeCompareMap ───────────────────────────────────────────────────────────
+// ── MapExtras (minZoom + relocate button + search bar) ────────────────────────
+function MapExtras({ showSearch = false }) {
+  const map = useMap();
+  const [isAway, setIsAway] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [focused, setFocused] = useState(false);
+  const searchMarkerRef = useRef(null);
+  const searchBoundsRef = useRef(null);
+  const timerRef = useRef(null);
+  const controlRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Set minZoom so Nepal is visible at max zoom-out
+  useEffect(() => { map.setMinZoom(7); }, [map]);
+
+  // Track if center is outside Kathmandu Valley
+  useEffect(() => {
+    const check = () => {
+      const bounds = L.latLngBounds(KATHMANDU_BOUNDS[0], KATHMANDU_BOUNDS[1]);
+      setIsAway(!bounds.contains(map.getCenter()));
+    };
+    map.on("moveend", check);
+    check();
+    return () => map.off("moveend", check);
+  }, [map]);
+
+  // Prevent map drag/click on control UI
+  useEffect(() => {
+    if (controlRef.current) {
+      L.DomEvent.disableClickPropagation(controlRef.current);
+      L.DomEvent.disableScrollPropagation(controlRef.current);
+    }
+  });
+
+  // Toggle classes on .mapbox for dynamic stat-ov positioning
+  useEffect(() => {
+    const mapbox = map.getContainer().closest('.mapbox');
+    if (!mapbox) return;
+    if (searchOpen) mapbox.classList.add('search-active');
+    else mapbox.classList.remove('search-active');
+    if (focused && results.length > 0) mapbox.classList.add('search-results-visible');
+    else mapbox.classList.remove('search-results-visible');
+  }, [map, searchOpen, focused, results.length]);
+
+  // Focus input when search opens
+  useEffect(() => {
+    if (searchOpen && inputRef.current) inputRef.current.focus();
+  }, [searchOpen]);
+
+  const relocate = useCallback(() => {
+    map.flyToBounds(KATHMANDU_BOUNDS, { padding: [20, 20], duration: 1 });
+  }, [map]);
+
+  const handleSearch = useCallback((q) => {
+    setQuery(q);
+    clearTimeout(timerRef.current);
+    if (q.length < 3) { setResults([]); return; }
+    timerRef.current = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=np&limit=5`)
+        .then(r => r.json())
+        .then(data => setResults(data))
+        .catch(() => setResults([]));
+    }, 400);
+  }, []);
+
+  const clearOverlays = useCallback(() => {
+    if (searchMarkerRef.current) { map.removeLayer(searchMarkerRef.current); searchMarkerRef.current = null; }
+    if (searchBoundsRef.current) { map.removeLayer(searchBoundsRef.current); searchBoundsRef.current = null; }
+  }, [map]);
+
+  const selectResult = useCallback((r) => {
+    const lat = +r.lat, lon = +r.lon;
+    setResults([]);
+    setQuery(r.display_name.split(",").slice(0, 2).join(", "));
+    setFocused(false);
+    clearOverlays();
+    // Ensure search pane exists above LULC imagery
+    if (!map.getPane('searchPane')) {
+      const p = map.createPane('searchPane');
+      p.style.zIndex = '500';
+    }
+    // Draw dashed bounding box if boundingbox is available
+    if (r.boundingbox) {
+      const south = +r.boundingbox[0], north = +r.boundingbox[1];
+      const west = +r.boundingbox[2], east = +r.boundingbox[3];
+      const rectBounds = [[south, west], [north, east]];
+      searchBoundsRef.current = L.rectangle(rectBounds, {
+        color: "#4cc9f0", weight: 2, dashArray: "8, 6", fill: true,
+        fillColor: "#4cc9f0", fillOpacity: 0.08, interactive: false, pane: 'searchPane'
+      }).addTo(map);
+      map.flyToBounds(rectBounds, { padding: [60, 60], duration: 1.5, maxZoom: 16 });
+    } else {
+      map.flyTo([lat, lon], 16, { duration: 1.5 });
+    }
+    // Add pin marker above LULC
+    searchMarkerRef.current = L.circleMarker([lat, lon], {
+      radius: 8, color: "#ff4d6d", fillColor: "#ff4d6d", fillOpacity: 0.5, weight: 2, pane: 'searchPane'
+    }).bindPopup(`<strong style="font-size:13px">${r.display_name.split(",")[0]}</strong><br/><span style="font-size:11px;color:#888">${r.display_name}</span>`).addTo(map).openPopup();
+  }, [map, clearOverlays]);
+
+  const clearSearch = useCallback(() => {
+    setQuery(""); setResults([]); clearOverlays();
+  }, [clearOverlays]);
+
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false); setQuery(""); setResults([]); setFocused(false); clearOverlays();
+  }, [clearOverlays]);
+
+  return createPortal(
+    <div ref={controlRef} className="map-extras">
+      {showSearch && (
+        <div className={`search-control ${searchOpen ? "open" : ""}`}>
+          {!searchOpen ? (
+            <button className="search-icon-btn" onClick={() => setSearchOpen(true)}>
+              <Search size={16} />
+            </button>
+          ) : (
+            <>
+              <div className="search-input-wrap">
+                <Search size={14} style={{ color: "var(--text3)", flexShrink: 0 }} />
+                <input
+                  ref={inputRef}
+                  type="text" className="search-input"
+                  placeholder="Search location in Nepal..."
+                  value={query}
+                  onChange={e => handleSearch(e.target.value)}
+                  onFocus={() => setFocused(true)}
+                  onBlur={() => setTimeout(() => setFocused(false), 400)}
+                />
+                {query && <button className="search-clear" onClick={clearSearch}><X size={12} /></button>}
+                <button className="search-clear" onClick={closeSearch}><X size={14} /></button>
+              </div>
+              {focused && results.length > 0 && (
+                <div className="search-results">
+                  {results.map((r, i) => (
+                    <button key={i} className="search-result-item" onClick={() => selectResult(r)}>
+                      <MapPin size={12} style={{ color: "var(--accent)", flexShrink: 0, marginTop: 2 }} />
+                      <div>
+                        <div className="sr-name">{r.display_name.split(",")[0]}</div>
+                        <div className="sr-addr">{r.display_name.split(",").slice(1, 3).join(",")}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      {isAway && (
+        <button className="relocate-btn" onClick={relocate}>
+          <Navigation2 size={14} />
+          <span>Kathmandu Valley</span>
+        </button>
+      )}
+    </div>,
+    map.getContainer()
+  );
+}
+
+// ── SwipeCompareMap (zero-lag: refs + direct DOM updates) ─────────────────────
 function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB }) {
-  const [swipePct, setSwipePct] = useState(50);
   const [hinted, setHinted] = useState(false);
   const wrapRef = useRef(null);
+  const dividerRef = useRef(null);
+  const handleRef = useRef(null);
+  const overlayElRef = useRef(null);
   const swipeDragging = useRef(false);
 
   const startSwipe = useCallback((e) => {
@@ -85,7 +262,11 @@ function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB 
       if (!swipeDragging.current || !wrapRef.current) return;
       const src = ev.touches ? ev.touches[0] : ev;
       const rect = wrapRef.current.getBoundingClientRect();
-      setSwipePct(Math.max(1, Math.min(99, ((src.clientX - rect.left) / rect.width) * 100)));
+      const pct = Math.max(1, Math.min(99, ((src.clientX - rect.left) / rect.width) * 100));
+      // Direct DOM updates — no React re-render, zero lag
+      if (dividerRef.current) dividerRef.current.style.left = `${pct}%`;
+      if (handleRef.current) handleRef.current.style.left = `${pct}%`;
+      if (overlayElRef.current) overlayElRef.current.style.clipPath = `inset(0 0 0 ${pct}%)`;
     };
     const end = () => { swipeDragging.current = false; window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", end); window.removeEventListener("touchmove", move); window.removeEventListener("touchend", end); };
     window.addEventListener("pointermove", move);
@@ -100,16 +281,14 @@ function SwipeCompareMap({ urlA, urlB, yearA, yearB, isPredictedA, isPredictedB 
         <ZoomControl position="bottomright" />
         <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
         <ImageOverlay url={urlA} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
-        <Pane name="swipePane" style={{ zIndex: 450 }}>
-          <ImageOverlay url={urlB} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
-        </Pane>
-        <SwipeClipController swipePct={swipePct} />
+        <SwipeOverlayDirect url={urlB} bounds={KATHMANDU_BOUNDS} opacity={0.82} overlayElRef={overlayElRef} initialPct={50} />
+        <MapExtras showSearch />
       </MapContainer>
       {/* Divider line */}
-      <div style={{ position: "absolute", top: 0, bottom: 0, left: `${swipePct}%`, width: 2, background: "rgba(255,255,255,0.85)", zIndex: 20, pointerEvents: "none", transform: "translateX(-1px)" }} />
+      <div ref={dividerRef} style={{ position: "absolute", top: 0, bottom: 0, left: "50%", width: 2, background: "rgba(255,255,255,0.85)", zIndex: 20, pointerEvents: "none", transform: "translateX(-1px)" }} />
       {/* Handle */}
-      <div onPointerDown={startSwipe} onTouchStart={startSwipe}
-        style={{ position: "absolute", top: "50%", left: `${swipePct}%`, transform: "translate(-50%,-50%)", width: 44, height: 44, borderRadius: "50%", background: "white", border: "2px solid #ccc", display: "flex", alignItems: "center", justifyContent: "center", cursor: "ew-resize", zIndex: 25, boxShadow: "0 2px 14px rgba(0,0,0,0.5)", fontSize: 17, color: "#070d19", fontWeight: 900, userSelect: "none", touchAction: "none" }}>⇄</div>
+      <div ref={handleRef} onPointerDown={startSwipe} onTouchStart={startSwipe}
+        style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 44, height: 44, borderRadius: "50%", background: "white", border: "2px solid #ccc", display: "flex", alignItems: "center", justifyContent: "center", cursor: "ew-resize", zIndex: 25, boxShadow: "0 2px 14px rgba(0,0,0,0.5)", fontSize: 17, color: "#070d19", fontWeight: 900, userSelect: "none", touchAction: "none" }}>⇄</div>
       {/* Labels */}
       <div style={{ position: "absolute", top: 12, left: 12, fontSize: "clamp(14px,4vw,22px)", fontWeight: 700, fontFamily: "var(--mono)", color: "#fff", textShadow: "0 2px 12px #000", pointerEvents: "none", zIndex: 15, display: "flex", alignItems: "center", gap: 4 }}>{yearA}{isPredictedA && <span style={{ fontSize: "clamp(7px,2vw,9px)", background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 4px" }}>PRED</span>}</div>
       <div style={{ position: "absolute", top: 12, right: 55, fontSize: "clamp(14px,4vw,22px)", fontWeight: 700, fontFamily: "var(--mono)", color: "#fff", textShadow: "0 2px 12px #000", pointerEvents: "none", zIndex: 15, display: "flex", alignItems: "center", gap: 4 }}>{yearB}{isPredictedB && <span style={{ fontSize: "clamp(7px,2vw,9px)", background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 4px" }}>PRED</span>}</div>
@@ -362,6 +541,7 @@ export default function App() {
         <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
         <ImageOverlay url={tileUrl(currentYear)} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
         {showHotspot && <ImageOverlay className="hotspot-overlay" url={`${BASE}/hotspot/hotspot.png`} bounds={KATHMANDU_BOUNDS} opacity={0.7} />}
+        <MapExtras showSearch />
       </MapContainer>
       <div className="yr-badge"><span className="yr-num">{currentYear}</span>{isPredicted && <span className="pred-tag">{isMobile ? "PRED" : "PREDICTED"}</span>}</div>
       <div className={isMobile ? "stat-ov-mobile" : "stat-ov"}>
@@ -407,7 +587,7 @@ export default function App() {
         @keyframes subtle-pulse{0%,100%{box-shadow:0 0 15px rgba(76,201,240,.3)}50%{box-shadow:0 0 25px rgba(76,201,240,.6)}}
 
         /* ── Leaflet overrides ── */
-        .leaflet-container { background: #020810 !important; }
+        .leaflet-container { background: #020810 !important; isolation: isolate; }
         .leaflet-control-zoom a { background: rgba(7,13,25,0.92) !important; border-color: rgba(255,255,255,0.14) !important; color: #c8ddf0 !important; }
         .leaflet-control-attribution { background: rgba(7,13,25,0.7) !important; color: #4a6580 !important; font-size: 8px !important; }
         .leaflet-control-attribution a { color: #4895ef !important; }
@@ -475,8 +655,10 @@ export default function App() {
         .yr-badge{position:absolute;top:10px;left:10px;background:rgba(7,13,25,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:5px 10px;display:flex;align-items:baseline;gap:6px;z-index:10;pointer-events:none;}
         .yr-num{font-family:var(--mono);font-size:clamp(22px,5vw,34px);font-weight:700;color:#fff;line-height:1;letter-spacing:-1px;}
         .pred-tag{font-size:8px;font-family:var(--mono);padding:2px 5px;background:rgba(255,183,3,.15);border:1px solid rgba(255,183,3,.4);color:var(--gold);border-radius:4px;}
-        .stat-ov{position:absolute;top:10px;right:55px;background:rgba(7,13,25,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;min-width:95px;z-index:10;pointer-events:none;}
+        .stat-ov{position:absolute;top:10px;right:55px;background:rgba(7,13,25,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:7px 10px;min-width:95px;z-index:10;pointer-events:none;transition:top .3s ease;}
         .stat-ov-mobile{position:absolute;bottom:175px;right:10px;background:rgba(7,13,25,.88);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 11px;min-width:105px;z-index:10;pointer-events:none;}
+        .mapbox.search-active > .stat-ov{top:58px;}
+        .mapbox.search-results-visible > .stat-ov{top:280px;}
         .sol{font-size:8px;font-family:var(--mono);color:var(--text3);letter-spacing:1px;margin-bottom:1px;}
         .sov{font-size:clamp(14px,4vw,20px);font-weight:700;font-family:var(--mono);color:var(--accent);line-height:1;}
         .sou{font-size:9px;color:var(--text3);}
@@ -592,14 +774,44 @@ export default function App() {
 
         ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 
+        /* ── Map Extras: Search & Relocate ── */
+        .map-extras{position:absolute;inset:0;pointer-events:none;z-index:1000;}
+        .map-extras>*{pointer-events:auto;}
+        .search-control{position:absolute;top:10px;right:10px;}
+        .search-icon-btn{width:38px;height:38px;border-radius:8px;border:none;cursor:pointer;background:rgba(7,13,25,.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:var(--text2);transition:all .2s;box-shadow:0 2px 10px rgba(0,0,0,.3);}
+        .search-icon-btn:hover{background:rgba(15,30,53,.95);border-color:rgba(255,77,109,.4);color:var(--accent);}
+        .search-control.open{width:min(88%,340px);right:10px;}
+        .search-input-wrap{display:flex;align-items:center;gap:8px;background:rgba(7,13,25,.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 12px;transition:border-color .2s;animation:searchExpand .25s ease;}
+        @keyframes searchExpand{from{opacity:0;transform:scaleX(0.3);transform-origin:right}to{opacity:1;transform:scaleX(1);transform-origin:right}}
+        .search-input-wrap:focus-within{border-color:rgba(255,77,109,.4);}
+        .search-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:13px;min-width:0;}
+        .search-input::placeholder{color:var(--text3);font-size:12px;}
+        .search-clear{background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center;padding:2px;border-radius:3px;transition:color .15s;}
+        .search-clear:hover{color:var(--accent);}
+        .search-results{margin-top:4px;background:rgba(7,13,25,.96);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);border-radius:8px;overflow:hidden;max-height:220px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+        .search-result-item{width:100%;display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;text-align:left;transition:background .15s;font-family:var(--font);}
+        .search-result-item:hover{background:rgba(255,255,255,.06);}
+        .search-result-item:last-child{border-bottom:none;}
+        .sr-name{font-size:12px;color:var(--text);font-weight:500;}
+        .sr-addr{font-size:10px;color:var(--text3);margin-top:1px;}
+        .relocate-btn{position:absolute;bottom:85px;left:10px;z-index:1000;display:flex;align-items:center;gap:6px;background:rgba(7,13,25,.92);backdrop-filter:blur(12px);border:1px solid rgba(255,77,109,.35);border-radius:8px;padding:8px 14px;cursor:pointer;color:var(--accent);font-family:var(--mono);font-size:11px;font-weight:600;box-shadow:0 2px 12px rgba(0,0,0,.4);transition:all .2s;}
+        .relocate-btn:hover{background:rgba(255,77,109,.15);border-color:var(--accent);transform:scale(1.03);}
+        .leaflet-popup-content-wrapper{background:var(--bg2)!important;color:var(--text)!important;border:1px solid var(--border)!important;border-radius:8px!important;box-shadow:0 4px 16px rgba(0,0,0,.5)!important;}
+        .leaflet-popup-tip{background:var(--bg2)!important;border:1px solid var(--border)!important;}
+        .leaflet-popup-close-button{color:var(--text3)!important;}
+
         /* ── Responsive breakpoints ── */
         @media(max-width:767px){
           .header-sub{display:none;}
           .sumbar{grid-template-columns:repeat(2,1fr);}
           .si:nth-child(3){border-top:1px solid var(--border);}
           .si:nth-child(4){border-top:1px solid var(--border);}
-          .footer .fi-t:first-child{display:none;}
           .footer .fi-t:last-child{display:none;}
+          .search-control{right:8px;top:8px;}
+          .search-control.open{width:min(75%,280px);}
+          .search-input{font-size:12px;}
+          .search-icon-btn{width:34px;height:34px;border-radius:7px;}
+          .relocate-btn{bottom:50px;padding:6px 10px;font-size:10px;}
         }
         @media(min-width:768px) and (max-width:1023px){
           .sp{width:220px;}
@@ -769,6 +981,7 @@ export default function App() {
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                       <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={liveBounds} opacity={0.82} />
                       <MapSyncController mapRef={splitMapARef} otherMapRef={splitMapBRef} syncRef={syncLock} />
+                      <MapExtras />
                     </MapContainer>
                     <div className="split-lbl">{yearA}{isPredictedA && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                   </div>
@@ -778,6 +991,7 @@ export default function App() {
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                       <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={liveBounds} opacity={0.82} />
                       <MapSyncController mapRef={splitMapBRef} otherMapRef={splitMapARef} syncRef={syncLock} />
+                      <MapExtras />
                     </MapContainer>
                     <div className="split-lbl">{yearB}{isPredictedB && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                   </div>
@@ -791,6 +1005,7 @@ export default function App() {
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                       <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                       <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82 * (opacityB / 100)} />
+                      <MapExtras showSearch />
                     </MapContainer>
                     <div style={{ position: "absolute", top: 10, left: 10, background: "rgba(7,13,25,.82)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 7, padding: "5px 10px", zIndex: 10, pointerEvents: "none", display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "#4895ef", fontWeight: 700 }}>{yearA}{isPredictedA && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</span>
@@ -850,6 +1065,7 @@ export default function App() {
                         <ZoomControl position="bottomright" />
                         <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                         <ImageOverlay url={`${BASE}/change/${sY}_${bY}_change.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
+                        <MapExtras showSearch />
                       </MapContainer>
                       <div style={{ position: "absolute", bottom: 50, left: 12, display: "flex", gap: 5, zIndex: 10, pointerEvents: "none" }}>
                         {[{ c: "#8b0000", l: "Stable" }, { c: "#fb8500", l: "New" }, { c: "#4895ef", l: "Lost" }].map(x => (
@@ -865,6 +1081,7 @@ export default function App() {
                           <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                           <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                           <MapSyncController mapRef={splitMapARef} otherMapRef={splitMapBRef} syncRef={syncLock} />
+                          <MapExtras />
                         </MapContainer>
                         <div className="split-lbl">{yearA}{isPredictedA && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                       </div>
@@ -874,6 +1091,7 @@ export default function App() {
                           <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                           <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                           <MapSyncController mapRef={splitMapBRef} otherMapRef={splitMapARef} syncRef={syncLock} />
+                          <MapExtras />
                         </MapContainer>
                         <div className="split-lbl">{yearB}{isPredictedB && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                       </div>
@@ -889,6 +1107,7 @@ export default function App() {
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
                       <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                       <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82 * (opacityB / 100)} />
+                      <MapExtras showSearch />
                     </MapContainer>
                     <div style={{ position: "absolute", top: 12, left: 12, background: "rgba(7,13,25,.82)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 8, padding: "5px 11px", zIndex: 10, pointerEvents: "none", display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 12, fontFamily: "var(--mono)", color: "#4895ef", fontWeight: 700 }}>{yearA}{isPredictedA && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</span>
