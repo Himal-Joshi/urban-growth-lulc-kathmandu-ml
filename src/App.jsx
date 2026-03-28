@@ -969,20 +969,20 @@ export default function App() {
               {compareMode === "split" && (
                 <div className="split-wrap">
                   <div className="split-half">
-                    <MapContainer bounds={liveBounds} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
+                    <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
                       <ZoomControl position="bottomright" />
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
-                      <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={liveBounds} opacity={0.82} />
+                      <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                       <MapSyncController mapRef={splitMapARef} otherMapRef={splitMapBRef} syncRef={syncLock} />
                       <MapExtras />
                     </MapContainer>
                     <div className="split-lbl">{yearA}{isPredictedA && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                   </div>
                   <div className="split-half">
-                    <MapContainer bounds={liveBounds} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
+                    <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
                       <ZoomControl position="bottomright" />
                       <TileLayer url={CARTO_DARK} attribution={CARTO_ATTR} />
-                      <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={liveBounds} opacity={0.82} />
+                      <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
                       <MapSyncController mapRef={splitMapBRef} otherMapRef={splitMapARef} syncRef={syncLock} />
                       <MapExtras />
                     </MapContainer>
