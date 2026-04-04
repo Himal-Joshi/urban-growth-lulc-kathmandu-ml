@@ -915,13 +915,13 @@ const TimelapseMap = ({ currentYear, years, isPredicted, isMobile, currentData, 
 
         /* ── Overlays ── */
         .yr-badge{position:absolute;top:84px;left:18px;background:var(--bg-glass);backdrop-filter:var(--glass-blur);border:none;border-left:4px solid var(--accent);border-radius:10px;padding:6px 14px;display:flex;align-items:baseline;gap:8px;z-index:1500;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,0.28);}
-        @media(max-width:767px){ .yr-badge{top: 12px; left: 12px; padding: 6px 12px; border-radius: 8px;} }
+        @media(max-width:767px){ .yr-badge{top: 18px; left: 12px; padding: 6px 12px; border-radius: 8px;} }
         .yr-num{font-family:var(--display);font-size:clamp(24px,4.8vw,40px);font-weight:800;color:var(--text);line-height:1;letter-spacing:-1.5px;}
         @media(max-width:767px){ .yr-num{font-size: 24px; letter-spacing: -1px;} }
         .pred-tag{font-size:8px;font-family:var(--mono);padding:2px 7px;background:rgba(255,183,3,0.1);border:1px solid rgba(255,183,3,0.3);color:var(--gold);border-radius:4px;font-weight:700;letter-spacing:0.8px;}
         .stat-ov{display:none;} /* Redundant in desktop, sidebar handles details */
         .stat-ov-mobile{position:absolute;top:200px;left:16px;background:var(--bg-glass);backdrop-filter:var(--glass-blur);border:1px solid var(--border);border-radius:16px;padding:12px 16px;min-width:120px;z-index:1500;pointer-events:none;box-shadow:0 12px 40px rgba(0,0,0,0.5);}
-        @media(max-width:767px){ .stat-ov-mobile{top: 72px; left: 12px; padding: 10px 12px; min-width: 104px;} }
+        @media(max-width:767px){ .stat-ov-mobile{top: auto; left: auto; bottom: 210px; right: 12px; padding: 10px 12px; min-width: 104px;} }
         .mapbox.search-active > .stat-ov{top:240px;}
         .mapbox.search-results-visible > .stat-ov{top:480px;}
         .sol{font-size:10px;font-family:var(--display);color:var(--text3);letter-spacing:1px;margin-bottom:1px;}
@@ -1416,11 +1416,10 @@ const TimelapseMap = ({ currentYear, years, isPredicted, isMobile, currentData, 
                   </div>
                   <div className="split-half">
                     <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
-                      <ZoomControl position="bottomright" />
                       <TileLayer url={baseMapUrl} attribution={CARTO_ATTR} />
                       {renderMode === 'tiff' ? <GeoRasterLayerComponent url={tifUrl(yearB)} opacity={0.82} /> : <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />}
                       <MapSyncController mapRef={splitMapBRef} otherMapRef={splitMapARef} syncRef={syncLock} />
-                      <MapExtras />
+                      <MapExtras showZoom={false} />
                     </MapContainer>
                     <div className="split-lbl">{yearB}{isPredictedB && <span style={{ fontSize: 7, marginLeft: 3, background: "rgba(255,183,3,.15)", border: "1px solid rgba(255,183,3,.4)", color: "var(--gold)", borderRadius: 3, padding: "1px 3px" }}>PRED</span>}</div>
                   </div>
@@ -1432,8 +1431,17 @@ const TimelapseMap = ({ currentYear, years, isPredicted, isMobile, currentData, 
                     <MapContainer bounds={KATHMANDU_BOUNDS} zoomControl={false} scrollWheelZoom style={{ height: "100%", width: "100%" }}>
                       <ZoomControl position="bottomright" />
                       <TileLayer url={baseMapUrl} attribution={CARTO_ATTR} />
-                      <GeoRasterLayerComponent url={tifUrl(yearA)} opacity={0.82} />
-                      <GeoRasterLayerComponent url={tifUrl(yearB)} opacity={0.82 * (opacityB / 100)} />
+                      {renderMode === 'tiff' ? (
+                        <>
+                          <GeoRasterLayerComponent url={tifUrl(yearA)} opacity={0.82} />
+                          <GeoRasterLayerComponent url={tifUrl(yearB)} opacity={0.82 * (opacityB / 100)} />
+                        </>
+                      ) : (
+                        <>
+                          <ImageOverlay url={`${BASE}/tiles/${yearA}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82} />
+                          <ImageOverlay url={`${BASE}/tiles/${yearB}_tile.png`} bounds={KATHMANDU_BOUNDS} opacity={0.82 * (opacityB / 100)} />
+                        </>
+                      )}
                       <MapRefController onReady={setOpacityMapInstance} />
                       <MapExtras />
                     </MapContainer>
