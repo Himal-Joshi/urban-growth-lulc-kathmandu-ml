@@ -1,8 +1,8 @@
 {
   "version": "v3",
   "model": {
-    "name": "FlexConvLSTM",
-    "class": "FlexConvLSTM",
+    "name": "ConvLSTM",
+    "class": "ConvLSTM",
     "checkpoint": "v3_GridSearch_Best/best_model.pth",
     "parameters": 1522435,
     "framework": "PyTorch",
